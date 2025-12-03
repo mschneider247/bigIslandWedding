@@ -9,14 +9,11 @@ export const config = {
   mapDescription: 'Adventure and romance await!',
   
   // Survey URL - replace with your actual survey link
-  surveyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScPfJJeOQrvwGyItudisB5ecTxgtzre5_bWo1L_tBfC-EKNgw/viewform',
+  surveyUrl: import.meta.env.VITE_SURVEY_URL || '',
   
   // Payment settings
-  venmoUrl: 'https://venmo.com/witwi_connor-payments', // Replace with your Venmo profile URL
-  checkMailingAddress: `Please send checks to:
-Connor and Michael
-25 East 5th Ave, Apt 409
-Denver, CO 80203`,
+  venmoUrl: import.meta.env.VITE_VENMO_URL || '', // Replace with your Venmo profile URL
+  checkMailingAddress: import.meta.env.VITE_CHECK_MAILING_ADDRESS || '',
   
   // Firebase configuration (will be set up separately)
   firebase: {
@@ -27,4 +24,3 @@ Denver, CO 80203`,
     // Add other Firebase config as needed
   },
 };
-

@@ -9,7 +9,12 @@ function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const handleSurveyClick = () => {
-    window.open(config.surveyUrl, '_blank', 'noopener,noreferrer');
+    if (config.surveyUrl) {
+      window.open(config.surveyUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      console.warn('Survey URL not configured. Please set VITE_SURVEY_URL in your .env file.');
+      alert('Survey URL is not configured. Please contact the site administrator.');
+    }
   };
 
   const handlePaymentClick = () => {

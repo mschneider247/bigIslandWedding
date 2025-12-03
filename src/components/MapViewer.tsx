@@ -79,15 +79,9 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         touch2.clientY - touch1.clientY
       );
       
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
-        const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-        
-        // Simple pinch zoom - you can refine this
-        const newScale = Math.max(0.5, Math.min(3, scale * (distance / 200)));
-        setScale(newScale);
-      }
+      // Simple pinch zoom
+      const newScale = Math.max(0.5, Math.min(3, scale * (distance / 200)));
+      setScale(newScale);
     }
   };
 

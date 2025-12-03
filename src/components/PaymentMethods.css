@@ -158,6 +158,16 @@
   white-space: pre-line;
 }
 
+.payment-warning {
+  padding: 12px;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .payment-modal {

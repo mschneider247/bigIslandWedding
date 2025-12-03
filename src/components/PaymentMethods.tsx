@@ -74,14 +74,18 @@ export default function PaymentMethods({
             <p className="payment-option-description">
               Send payment through Venmo
             </p>
-            <a
-              href={venmoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="payment-option-button secondary"
-            >
-              Open Venmo
-            </a>
+            {venmoUrl ? (
+              <a
+                href={venmoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="payment-option-button secondary"
+              >
+                Open Venmo
+              </a>
+            ) : (
+              <p className="payment-warning">Venmo URL not configured</p>
+            )}
           </div>
 
           {/* Check Option */}
@@ -89,13 +93,19 @@ export default function PaymentMethods({
             <div className="payment-option-header">
               <h3>Check by Mail</h3>
             </div>
-            <p className="payment-option-description">
-              {checkMailingAddress || 'Please contact us for mailing address'}
-            </p>
-            {checkMailingAddress && (
-              <div className="mailing-address">
-                <p>{checkMailingAddress}</p>
-              </div>
+            {checkMailingAddress ? (
+              <>
+                <p className="payment-option-description">
+                  Send a check to the following address:
+                </p>
+                <div className="mailing-address">
+                  <p style={{ whiteSpace: 'pre-line' }}>{checkMailingAddress.replace(/\\n/g, '\n')}</p>
+                </div>
+              </>
+            ) : (
+              <p className="payment-option-description">
+                Please contact us for mailing address
+              </p>
             )}
           </div>
         </div>
