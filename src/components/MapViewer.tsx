@@ -95,27 +95,46 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     handleEnd();
   };
 
-  // Wheel zoom
+  // Wheel zoom - zoom towards mouse position
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
+    if (!containerRef.current || !imageRef.current) return;
+    
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
     const delta = e.deltaY * -0.001;
     const newScale = Math.max(0.5, Math.min(3, scale + delta));
+    const scaleChange = newScale / scale;
+    
+    // Zoom towards mouse position
+    const newX = mouseX - (mouseX - position.x) * scaleChange;
+    const newY = mouseY - (mouseY - position.y) * scaleChange;
+    
     setScale(newScale);
-  }, [scale]);
+    setPosition({ x: newX, y: newY });
+  }, [scale, position]);
 
-  // Reset position when scale changes to center
+  // Center the image on initial load
   useEffect(() => {
-    if (containerRef.current && imageRef.current) {
+    if (imageLoaded && containerRef.current && imageRef.current) {
       const container = containerRef.current;
       const image = imageRef.current;
       
-      // Center the image
-      const centerX = (container.clientWidth - image.naturalWidth * scale) / 2;
-      const centerY = (container.clientHeight - image.naturalHeight * scale) / 2;
+      // Center the image initially
+      const centerX = (container.clientWidth - image.naturalWidth) / 2;
+      const centerY = (container.clientHeight - image.naturalHeight) / 2;
       
       setPosition({ x: centerX, y: centerY });
     }
-  }, [scale]);
+  }, [imageLoaded]);
+
+  // Handle image load
+  const handleImageLoad = useCallback(() => {
+    setImageLoaded(true);
+  }, []);
 
   return (
     <div
@@ -144,6 +163,10 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
           alt="Map"
           className="map-image"
           draggable={false}
+          onLoad={handleImageLoad}
+          onError={() => {
+            console.error('Failed to load map image:', mapImageUrl);
+          }}
         />
       </div>
       {children}

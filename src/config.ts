@@ -5,18 +5,18 @@ export const config = {
   mapImage: '/map.jpg', // Place your map image in the public folder
   
   // Label content
-  mapTitle: 'Big Island Wedding Map',
-  mapDescription: 'Explore our wedding venue and locations. Click the buttons below to take our survey or make a payment.',
+  mapTitle: "Aloha Hawai'i",
+  mapDescription: 'Adventure and romance await!',
   
   // Survey URL - replace with your actual survey link
-  surveyUrl: 'https://example.com/survey',
+  surveyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScPfJJeOQrvwGyItudisB5ecTxgtzre5_bWo1L_tBfC-EKNgw/viewform',
   
   // Payment settings
-  venmoUrl: 'https://venmo.com/your-username', // Replace with your Venmo profile URL
+  venmoUrl: 'https://venmo.com/witwi_connor-payments', // Replace with your Venmo profile URL
   checkMailingAddress: `Please send checks to:
-Your Name
-Your Address
-City, State ZIP`,
+Connor and Michael
+25 East 5th Ave, Apt 409
+Denver, CO 80203`,
   
   // Firebase configuration (will be set up separately)
   firebase: {
