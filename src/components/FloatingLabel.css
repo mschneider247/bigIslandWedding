@@ -1,31 +1,17 @@
 .floating-label {
   position: fixed;
+  top: 20px;
+  left: 20px;
   z-index: 1000;
   pointer-events: none;
   max-width: 300px;
 }
 
-.floating-label.mobile {
-  bottom: 20px;
-  right: 20px;
-  left: auto;
-  top: auto;
-  pointer-events: auto;
-}
-
-.floating-label.desktop {
-  transform: translate(-50%, -100%);
-  margin-top: -10px;
-}
-
 .label-content {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: transparent;
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .label-title {
@@ -33,13 +19,15 @@
   font-size: 1.2rem;
   font-weight: 600;
   color: #1a1a1a;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .label-description {
   margin: 0 0 12px 0;
   font-size: 0.9rem;
-  color: #555;
+  color: #333;
   line-height: 1.4;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .label-buttons {
@@ -83,10 +71,10 @@
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-  .floating-label.mobile {
+  .floating-label {
     max-width: calc(100vw - 40px);
-    bottom: 10px;
-    right: 10px;
+    top: 10px;
+    left: 10px;
   }
 
   .label-content {
@@ -109,17 +97,13 @@
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-  .label-content {
-    background: rgba(26, 26, 26, 0.95);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
   .label-title {
     color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   }
 
   .label-description {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   }
 }
-

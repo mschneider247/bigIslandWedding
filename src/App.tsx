@@ -29,7 +29,6 @@ function App() {
           description={config.mapDescription}
           onSurveyClick={handleSurveyClick}
           onPaymentClick={handlePaymentClick}
-          followCursor={true}
         />
       </MapViewer>
       <PaymentMethods
