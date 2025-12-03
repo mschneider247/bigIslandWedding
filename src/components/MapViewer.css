@@ -1,0 +1,35 @@
+.map-viewer {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+  background-color: #2a2a2a;
+}
+
+.map-container {
+  position: absolute;
+  will-change: transform;
+  transition: transform 0.1s ease-out;
+}
+
+.map-image {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  max-width: none;
+  height: auto;
+}
+
+/* Ensure smooth transitions when not dragging */
+.map-container:not(.dragging) {
+  transition: transform 0.1s ease-out;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .map-viewer {
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+}
+

@@ -1,0 +1,125 @@
+.floating-label {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  max-width: 300px;
+}
+
+.floating-label.mobile {
+  bottom: 20px;
+  right: 20px;
+  left: auto;
+  top: auto;
+  pointer-events: auto;
+}
+
+.floating-label.desktop {
+  transform: translate(-50%, -100%);
+  margin-top: -10px;
+}
+
+.label-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.label-title {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.label-description {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.label-buttons {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.label-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.survey-button {
+  background-color: #646cff;
+  color: white;
+}
+
+.survey-button:hover {
+  background-color: #535bf2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.4);
+}
+
+.payment-button {
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.payment-button:hover {
+  background-color: #2a2a2a;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .floating-label.mobile {
+    max-width: calc(100vw - 40px);
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .label-content {
+    padding: 14px;
+  }
+
+  .label-title {
+    font-size: 1.1rem;
+  }
+
+  .label-description {
+    font-size: 0.85rem;
+  }
+
+  .label-button {
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .label-content {
+    background: rgba(26, 26, 26, 0.95);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .label-title {
+    color: #ffffff;
+  }
+
+  .label-description {
+    color: #cccccc;
+  }
+}
+
