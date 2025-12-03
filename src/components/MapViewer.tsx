@@ -80,7 +80,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       );
       
       // Simple pinch zoom
-      const newScale = Math.max(0.5, Math.min(3, scale * (distance / 200)));
+      const newScale = Math.max(0.25, Math.min(3, scale * (distance / 200)));
       setScale(newScale);
     }
   };
@@ -100,7 +100,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const mouseY = e.clientY - rect.top;
     
     const delta = e.deltaY * -0.001;
-    const newScale = Math.max(0.5, Math.min(3, scale + delta));
+    const newScale = Math.max(0.25, Math.min(3, scale + delta));
     const scaleChange = newScale / scale;
     
     // Zoom towards mouse position
