@@ -37,7 +37,7 @@ function App() {
         venmoUrl={config.venmoUrl}
         checkMailingAddress={config.checkMailingAddress}
       />
-    </div>
+      </div>
   );
 }
 

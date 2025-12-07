@@ -143,6 +143,16 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+.payment-warning {
+  padding: 12px;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
 .mailing-address {
   background: #f5f5f5;
   padding: 12px;
@@ -156,16 +166,6 @@
   font-size: 0.9rem;
   line-height: 1.6;
   white-space: pre-line;
-}
-
-.payment-warning {
-  padding: 12px;
-  background: #fff3cd;
-  color: #856404;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  text-align: center;
-  margin: 0;
 }
 
 /* Mobile adjustments */

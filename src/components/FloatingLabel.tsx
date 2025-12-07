@@ -20,10 +20,10 @@ export default function FloatingLabel({
         <p className="label-description">{description}</p>
         <div className="label-buttons">
           <button className="label-button survey-button" onClick={onSurveyClick}>
-            Take Survey
+            RSVP
           </button>
           <button className="label-button payment-button" onClick={onPaymentClick}>
-            Payment
+            Gift
           </button>
         </div>
       </div>

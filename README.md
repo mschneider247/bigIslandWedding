@@ -27,31 +27,16 @@ Place your map image file in the `public` folder and name it `map.jpg` (or updat
 
 Supported formats: JPG, PNG, WebP
 
-### 3. Configure Environment Variables
+### 3. Configure App Settings
 
-**IMPORTANT**: Sensitive information (survey URL, Venmo URL, mailing address) must be stored in environment variables for security.
+Edit `src/config.ts` to customize:
 
-1. Copy the example environment file:
-   ```bash
-   cp env.example .env
-   ```
-
-2. Edit `.env` and fill in your values:
-   ```env
-   # Survey URL
-   VITE_SURVEY_URL=https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform
-   
-   # Payment Settings
-   VITE_VENMO_URL=https://venmo.com/your-username
-   VITE_CHECK_MAILING_ADDRESS=Please send checks to:\nYour Name\nYour Address\nCity, State ZIP
-   ```
-
-   **Note**: Use `\n` for line breaks in the mailing address.
-
-3. Edit `src/config.ts` for non-sensitive settings:
-   - **Map Image**: Path to your map image (default: `/map.jpg`)
-   - **Map Title**: The title displayed in the floating label
-   - **Map Description**: Description text for the floating label
+- **Map Image**: Path to your map image (default: `/map.jpg`)
+- **Map Title**: The title displayed in the floating label
+- **Map Description**: Description text for the floating label
+- **Survey URL**: Link to your survey form
+- **Venmo URL**: Your Venmo profile URL
+- **Mailing Address**: Address for check payments
 
 ### 4. Firebase Setup (For Payments)
 
@@ -72,7 +57,7 @@ Supported formats: JPG, PNG, WebP
 
 #### Configure Firebase
 
-Add Firebase configuration to your `.env` file:
+1. Create a `.env` file in the root directory:
 
 ```env
 VITE_FIREBASE_API_KEY=your-api-key
@@ -80,7 +65,7 @@ VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your-project-id
 ```
 
-The Firebase configuration is already set up in `src/config.ts` to read from these environment variables.
+2. Update `src/config.ts` to use these environment variables (already configured)
 
 3. The Firebase configuration will be automatically loaded from environment variables
 
@@ -177,33 +162,14 @@ Click the "Payment" button in the floating label to see payment options:
 - **Venmo**: Opens your Venmo profile in a new tab
 - **Check by Mail**: Displays mailing address
 
-## Security & Privacy
-
-**IMPORTANT**: This application stores sensitive information in environment variables:
-
-- **Survey URLs** - May contain identifiable form IDs
-- **Venmo URLs** - Contains personal payment profile information
-- **Mailing Addresses** - Contains full personal addresses including names
-
-All sensitive data has been moved to environment variables (`.env` file) which is gitignored and will not be committed to version control. 
-
-**Before deploying or sharing your repository:**
-1. Ensure `.env` is in `.gitignore` (already configured)
-2. Never commit `.env` files to version control
-3. Use `env.example` as a template for other developers
-4. Set environment variables in your hosting platform (Firebase, Vercel, etc.) for production
-
 ## Customization
 
-### Environment Variables (`.env` file)
-- Survey URL (`VITE_SURVEY_URL`)
-- Venmo URL (`VITE_VENMO_URL`)
-- Mailing address (`VITE_CHECK_MAILING_ADDRESS`)
-- Firebase configuration
-
-### Configuration File (`src/config.ts`)
+All customizable content is in `src/config.ts`. You can modify:
 - Map image path
-- Map title and description
+- Title and description
+- Survey URL
+- Venmo URL
+- Mailing address
 
 ## Troubleshooting
 

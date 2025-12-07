@@ -79,7 +79,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         touch2.clientY - touch1.clientY
       );
       
-      // Simple pinch zoom
+      // Simple pinch zoom - allow zoom out to 0.25 (twice as far)
       const newScale = Math.max(0.25, Math.min(3, scale * (distance / 200)));
       setScale(newScale);
     }
@@ -100,6 +100,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const mouseY = e.clientY - rect.top;
     
     const delta = e.deltaY * -0.001;
+    // Allow zoom out to 0.25 (twice as far as before)
     const newScale = Math.max(0.25, Math.min(3, scale + delta));
     const scaleChange = newScale / scale;
     
