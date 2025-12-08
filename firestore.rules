@@ -1,0 +1,50 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Customer documents - users can read their own customer document
+    // The Stripe extension will create/update customer documents
+    match /customers/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update, delete: if false; // Only extension can modify
+      
+      // Checkout sessions subcollection
+      // Users can create checkout session documents in their own collection
+      // Users can read their own checkout sessions to get the URL
+      // The extension will update the document with the checkout URL
+      match /checkout_sessions/{sessionId} {
+        allow create: if isOwner(userId);
+        allow read: if isOwner(userId);
+        allow update: if false; // Only extension can update (adds URL, error, etc.)
+        allow delete: if false; // Only extension can delete
+      }
+      
+      // Payment intents subcollection (if used)
+      match /payment_intents/{intentId} {
+        allow read: if isOwner(userId);
+        allow create, update, delete: if false; // Only extension can modify
+      }
+      
+      // Subscriptions subcollection (if used)
+      match /subscriptions/{subscriptionId} {
+        allow read: if isOwner(userId);
+        allow create, update, delete: if false; // Only extension can modify
+      }
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

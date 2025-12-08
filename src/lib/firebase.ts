@@ -12,6 +12,7 @@ import {
   type User
 } from 'firebase/auth';
 import { getFunctions, type Functions, httpsCallable } from 'firebase/functions';
+import { getFirestore, collection, doc, addDoc, onSnapshot, type Firestore } from 'firebase/firestore';
 import { config } from '../config';
 
 // Re-export User type for convenience
@@ -20,10 +21,11 @@ export type { User };
 let app: FirebaseApp | null = null;
 let functions: Functions | null = null;
 let auth: Auth | null = null;
+let firestore: Firestore | null = null;
 
 // Initialize Firebase
 export const initializeFirebase = () => {
-  if (app) return { app, functions, auth };
+  if (app) return { app, functions, auth, firestore };
 
   const firebaseConfig = {
     apiKey: config.firebase.apiKey,
@@ -37,16 +39,11 @@ export const initializeFirebase = () => {
     app = initializeApp(firebaseConfig);
     // Initialize Functions with explicit region (us-central1 is default for extensions)
     functions = getFunctions(app, 'us-central1');
-    
-    // Use emulator for local development if needed (uncomment if using emulator)
-    // if (import.meta.env.DEV) {
-    //   connectFunctionsEmulator(functions, 'localhost', 5001);
-    // }
-    
     auth = getAuth(app);
+    firestore = getFirestore(app);
   }
 
-  return { app, functions, auth };
+  return { app, functions, auth, firestore };
 };
 
 // Get Firebase app instance
@@ -66,6 +63,17 @@ export const getFirebaseFunctions = (): Functions => {
     }
   }
   return functions;
+};
+
+// Get Firestore instance
+export const getFirestoreInstance = (): Firestore => {
+  if (!firestore) {
+    initializeFirebase();
+    if (!firestore) {
+      throw new Error('Firestore is not initialized. Please check your Firebase configuration.');
+    }
+  }
+  return firestore;
 };
 
 // Get Firebase Auth instance
@@ -105,17 +113,16 @@ export const onAuthChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
 };
 
-// Payment processing function using Stripe extension
-// The "Run Payments with Stripe" extension typically provides functions like:
-// - createCheckoutSession
-// - createPaymentIntent
+// Payment processing using Invertase Firestore Stripe Payments extension
+// The extension works by creating a Firestore document in /customers/{userId}/checkout_sessions
+// The extension automatically processes the document and adds a 'url' field when ready
 export const createCheckoutSession = async (
   amount: number, 
   currency: string = 'USD',
   successUrl?: string,
   cancelUrl?: string
-) => {
-  const functions = getFirebaseFunctions();
+): Promise<{ url: string }> => {
+  const db = getFirestoreInstance();
   const user = getCurrentUser();
   
   if (!user) {
@@ -126,72 +133,68 @@ export const createCheckoutSession = async (
   const defaultSuccessUrl = successUrl || window.location.origin + '/payment-success';
   const defaultCancelUrl = cancelUrl || window.location.origin + '/payment-cancel';
 
-  // The Invertase extension function name
-  const functionName = 'ext-firestore-stripe-payments-createCheckoutSession';
-
-  try {
-    console.log(`Calling function: ${functionName}`);
-    const fn = httpsCallable(functions, functionName);
-    
-    // Invertase extension expects:
-    // - line_items array with price_data (for custom amounts)
-    // - OR price ID (if using predefined Stripe prices)
-    // - success_url and cancel_url (snake_case, not camelCase)
-    // - mode: 'payment' for one-time payments
-    // - client_reference_id: user ID to link to Firebase user
-    
-    const params = {
-      line_items: [
-        {
-          price_data: {
-            currency: currency.toLowerCase(),
-            product_data: {
-              name: 'Wedding Gift',
-              description: 'Wedding gift payment',
-            },
-            unit_amount: Math.round(amount * 100), // Convert to cents
+  // Create a document in the checkout_sessions subcollection
+  // The extension will watch for new documents and create the Stripe checkout session
+  const checkoutSessionsRef = collection(db, `customers/${user.uid}/checkout_sessions`);
+  
+  // Create the document with checkout session data
+  const sessionData: any = {
+    mode: 'payment',
+    success_url: defaultSuccessUrl,
+    cancel_url: defaultCancelUrl,
+    line_items: [
+      {
+        price_data: {
+          currency: currency.toLowerCase(),
+          product_data: {
+            name: 'Wedding Gift',
+            description: 'Wedding gift payment',
           },
-          quantity: 1,
+          unit_amount: Math.round(amount * 100), // Convert to cents
         },
-      ],
-      mode: 'payment',
-      success_url: defaultSuccessUrl,
-      cancel_url: defaultCancelUrl,
-      client_reference_id: user.uid, // Link to Firebase user
-    };
+        quantity: 1,
+      },
+    ],
+  };
 
-    console.log('Calling with params:', params);
-    const result = await fn(params);
-    console.log('Success! Result:', result.data);
-    return result.data;
-  } catch (error: any) {
-    console.error('Payment function error:', error);
-    
-    // Try alternative: if price_data doesn't work, try with amount parameter
-    try {
-      console.log('Trying alternative parameter format with amount...');
-      const fn = httpsCallable(functions, functionName);
-      const altParams = {
-        amount: Math.round(amount * 100),
-        currency: currency.toLowerCase(),
-        mode: 'payment',
-        success_url: defaultSuccessUrl,
-        cancel_url: defaultCancelUrl,
-        client_reference_id: user.uid,
-      };
+  console.log('Creating Firestore document for checkout session:', sessionData);
+  const docRef = await addDoc(checkoutSessionsRef, sessionData);
+  console.log('Document created with ID:', docRef.id);
+
+  // Return a promise that resolves when the extension adds the URL to the document
+  return new Promise((resolve, reject) => {
+    // Listen for changes to the document
+    const unsubscribe = onSnapshot(docRef, (snapshot) => {
+      const data = snapshot.data();
       
-      const result = await fn(altParams);
-      console.log('Success with alternative format!', result.data);
-      return result.data;
-    } catch (altError: any) {
-      console.error('Alternative format also failed:', altError);
-      throw new Error(
-        `Payment function failed. Error: ${error?.code || 'unknown'} - ${error?.message || 'Unknown error'}. ` +
-        `Extension expects line_items with price_data or a Stripe Price ID. ` +
-        `Check browser console for detailed error information.`
-      );
-    }
-  }
+      if (data?.error) {
+        unsubscribe();
+        console.error('Checkout session error:', data.error);
+        reject(new Error(data.error.message || 'Failed to create checkout session'));
+        return;
+      }
+      
+      if (data?.url) {
+        unsubscribe();
+        console.log('Checkout session URL received:', data.url);
+        resolve({ url: data.url });
+        return;
+      }
+      
+      // Document created but URL not yet available - extension is still processing
+      console.log('Waiting for checkout session URL...', data);
+    }, (error) => {
+      unsubscribe();
+      console.error('Firestore snapshot error:', error);
+      reject(new Error(`Failed to create checkout session: ${error.message}`));
+    });
+
+    // Timeout after 30 seconds
+    setTimeout(() => {
+      unsubscribe();
+      reject(new Error('Checkout session creation timed out. Please try again.'));
+    }, 30000);
+  });
 };
 
 // Legacy payment function (updated to use Stripe)
