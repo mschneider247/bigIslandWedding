@@ -11,21 +11,19 @@ import {
   onAuthStateChanged,
   type User
 } from 'firebase/auth';
-import { getFunctions, type Functions, httpsCallable } from 'firebase/functions';
-import { getFirestore, collection, doc, addDoc, onSnapshot, type Firestore } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, onSnapshot, type Firestore } from 'firebase/firestore';
 import { config } from '../config';
 
 // Re-export User type for convenience
 export type { User };
 
 let app: FirebaseApp | null = null;
-let functions: Functions | null = null;
 let auth: Auth | null = null;
 let firestore: Firestore | null = null;
 
 // Initialize Firebase
 export const initializeFirebase = () => {
-  if (app) return { app, functions, auth, firestore };
+  if (app) return { app, auth, firestore };
 
   const firebaseConfig = {
     apiKey: config.firebase.apiKey,
@@ -37,13 +35,11 @@ export const initializeFirebase = () => {
   // Only initialize if we have the required config
   if (firebaseConfig.apiKey && firebaseConfig.projectId) {
     app = initializeApp(firebaseConfig);
-    // Initialize Functions with explicit region (us-central1 is default for extensions)
-    functions = getFunctions(app, 'us-central1');
     auth = getAuth(app);
     firestore = getFirestore(app);
   }
 
-  return { app, functions, auth, firestore };
+  return { app, auth, firestore };
 };
 
 // Get Firebase app instance
@@ -52,17 +48,6 @@ export const getFirebaseApp = () => {
     initializeFirebase();
   }
   return app;
-};
-
-// Get Firebase Functions instance
-export const getFirebaseFunctions = (): Functions => {
-  if (!functions) {
-    initializeFirebase();
-    if (!functions) {
-      throw new Error('Firebase Functions is not initialized. Please check your Firebase configuration.');
-    }
-  }
-  return functions;
 };
 
 // Get Firestore instance
