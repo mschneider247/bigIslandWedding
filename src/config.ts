@@ -5,7 +5,7 @@ export const config = {
   mapImage: '/map.jpg', // Place your map image in the public folder
   
   // Label content
-  mapTitle: "Aloha Hawai'i",
+  mapTitle: "Join us for our wedding!",
   mapDescription: 'Adventure and romance await!',
   
   // Survey URL - replace with your actual survey link

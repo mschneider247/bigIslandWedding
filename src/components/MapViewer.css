@@ -4,12 +4,16 @@
   overflow: hidden;
   position: relative;
   touch-action: none;
-  background-color: #1e3a8a;
+  background-color: #2d8ac5;
 }
 
 .map-container {
   position: absolute;
   will-change: transform;
+}
+
+/* Only apply transition when NOT dragging */
+.map-container:not(.dragging) {
   transition: transform 0.1s ease-out;
 }
 
@@ -21,10 +25,6 @@
   height: auto;
 }
 
-/* Ensure smooth transitions when not dragging */
-.map-container:not(.dragging) {
-  transition: transform 0.1s ease-out;
-}
 
 /* Mobile optimizations */
 @media (max-width: 768px) {

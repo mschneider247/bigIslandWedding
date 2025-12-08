@@ -10,64 +10,83 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+  const positionRef = useRef(position);
+
+  // Keep position ref in sync
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
 
   // Handle mouse/touch start
   const handleStart = useCallback((clientX: number, clientY: number) => {
     setIsDragging(true);
-    setDragStart({
-      x: clientX - position.x,
-      y: clientY - position.y,
-    });
-  }, [position]);
+    dragStartRef.current = {
+      x: clientX - positionRef.current.x,
+      y: clientY - positionRef.current.y,
+    };
+  }, []);
 
   // Handle mouse/touch move
   const handleMove = useCallback((clientX: number, clientY: number) => {
-    if (!isDragging) return;
-    
     setPosition({
-      x: clientX - dragStart.x,
-      y: clientY - dragStart.y,
+      x: clientX - dragStartRef.current.x,
+      y: clientY - dragStartRef.current.y,
     });
-  }, [isDragging, dragStart]);
+  }, []);
 
   // Handle mouse/touch end
   const handleEnd = useCallback(() => {
     setIsDragging(false);
   }, []);
 
-  // Mouse events
+  // Mouse events with global listeners for better performance
+  useEffect(() => {
+    if (isDragging) {
+      const handleMouseMove = (e: MouseEvent) => {
+        handleMove(e.clientX, e.clientY);
+      };
+
+      const handleMouseUp = () => {
+        handleEnd();
+      };
+
+      // Use global listeners for smoother dragging
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMove, handleEnd]);
+
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     handleStart(e.clientX, e.clientY);
   };
 
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (isDragging) {
-      handleMove(e.clientX, e.clientY);
-    }
-  };
-
-  const onMouseUp = () => {
-    handleEnd();
-  };
-
   const onMouseLeave = () => {
-    handleEnd();
+    if (isDragging) {
+      handleEnd();
+    }
   };
 
   // Touch events
   const onTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
+      e.preventDefault(); // Prevent default touch behavior
       handleStart(e.touches[0].clientX, e.touches[0].clientY);
     }
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
     if (e.touches.length === 1 && isDragging) {
+      e.preventDefault(); // Only prevent default when dragging
       handleMove(e.touches[0].clientX, e.touches[0].clientY);
     } else if (e.touches.length === 2) {
       // Pinch zoom
@@ -136,8 +155,6 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       ref={containerRef}
       className="map-viewer"
       onMouseDown={onMouseDown}
-      onMouseMove={onMouseMove}
-      onMouseUp={onMouseUp}
       onMouseLeave={onMouseLeave}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -146,7 +163,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
       <div
-        className="map-container"
+        className={`map-container ${isDragging ? 'dragging' : ''}`}
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
           transformOrigin: '0 0',
