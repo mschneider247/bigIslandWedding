@@ -16,6 +16,7 @@ export default function FloatingLabel({
   return (
     <div className="floating-label">
       <div className="label-content">
+        <img src="/label.png" alt="Label" className="label-image" />
         <h2 className="label-title">{title}</h2>
         <p className="label-description">{description}</p>
         <div className="label-buttons">
