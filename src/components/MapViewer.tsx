@@ -22,6 +22,38 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     positionRef.current = position;
   }, [position]);
 
+  // Clamp position to keep within bounds (max 200px border)
+  const clampPosition = useCallback((x: number, y: number, currentScale: number) => {
+    if (!containerRef.current || !imageRef.current) {
+      return { x, y };
+    }
+
+    const container = containerRef.current;
+    const image = imageRef.current;
+    const maxBorder = 200;
+
+    // Calculate scaled image dimensions
+    const scaledWidth = image.naturalWidth * currentScale;
+    const scaledHeight = image.naturalHeight * currentScale;
+
+    // Calculate bounds
+    // Left edge: can't scroll more than 200px to the left (negative position)
+    const minX = -maxBorder;
+    // Right edge: image right edge (x + scaledWidth) can't be more than container width + 200px
+    const maxX = container.clientWidth - scaledWidth + maxBorder;
+
+    // Top edge: can't scroll more than 200px up (negative position)
+    const minY = -maxBorder;
+    // Bottom edge: image bottom edge (y + scaledHeight) can't be more than container height + 200px
+    const maxY = container.clientHeight - scaledHeight + maxBorder;
+
+    // Clamp the position
+    const clampedX = Math.max(minX, Math.min(maxX, x));
+    const clampedY = Math.max(minY, Math.min(maxY, y));
+
+    return { x: clampedX, y: clampedY };
+  }, []);
+
   // Handle mouse/touch start
   const handleStart = useCallback((clientX: number, clientY: number) => {
     setIsDragging(true);
@@ -33,11 +65,13 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
 
   // Handle mouse/touch move
   const handleMove = useCallback((clientX: number, clientY: number) => {
-    setPosition({
+    const newPosition = {
       x: clientX - dragStartRef.current.x,
       y: clientY - dragStartRef.current.y,
-    });
-  }, []);
+    };
+    const clamped = clampPosition(newPosition.x, newPosition.y, scale);
+    setPosition(clamped);
+  }, [scale, clampPosition]);
 
   // Handle mouse/touch end
   const handleEnd = useCallback(() => {
@@ -150,7 +184,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         const newY = currentCenter.y - (currentCenter.y - positionRef.current.y) * scaleRatio;
         
         setScale(newScale);
-        setPosition({ x: newX, y: newY });
+        const clamped = clampPosition(newX, newY, newScale);
+        setPosition(clamped);
       }
     }
   };
@@ -180,8 +215,9 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const newY = mouseY - (mouseY - position.y) * scaleChange;
     
     setScale(newScale);
-    setPosition({ x: newX, y: newY });
-  }, [scale, position]);
+    const clamped = clampPosition(newX, newY, newScale);
+    setPosition(clamped);
+  }, [scale, position, clampPosition]);
 
   // Center the image on initial load
   useEffect(() => {
@@ -193,9 +229,10 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       const centerX = (container.clientWidth - image.naturalWidth) / 2;
       const centerY = (container.clientHeight - image.naturalHeight) / 2;
       
-      setPosition({ x: centerX, y: centerY });
+      const clamped = clampPosition(centerX, centerY, scale);
+      setPosition(clamped);
     }
-  }, [imageLoaded]);
+  }, [imageLoaded, scale, clampPosition]);
 
   // Handle image load
   const handleImageLoad = useCallback(() => {
