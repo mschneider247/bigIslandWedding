@@ -32,20 +32,28 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const image = imageRef.current;
     const maxBorder = 200;
 
-    // Calculate scaled image dimensions
+    // Calculate scaled image dimensions (accounting for JavaScript scale only)
+    // CSS scale from media queries affects visual size but layout calculations use natural dimensions
     const scaledWidth = image.naturalWidth * currentScale;
     const scaledHeight = image.naturalHeight * currentScale;
 
-    // Calculate bounds
-    // Left edge: can't scroll more than 200px to the left (negative position)
+    // Calculate bounds - allow up to 200px of border on any side
+    // Left edge: can't scroll more than 200px to the left
     const minX = -maxBorder;
-    // Right edge: image right edge (x + scaledWidth) can't be more than container width + 200px
+    // Right edge: image right edge (x + scaledWidth) should not exceed container width + 200px
     const maxX = container.clientWidth - scaledWidth + maxBorder;
 
-    // Top edge: can't scroll more than 200px up (negative position)
+    // Top edge: can't scroll more than 200px up
     const minY = -maxBorder;
-    // Bottom edge: image bottom edge (y + scaledHeight) can't be more than container height + 200px
+    // Bottom edge: image bottom edge (y + scaledHeight) should not exceed container height + 200px
     const maxY = container.clientHeight - scaledHeight + maxBorder;
+
+    // Only clamp if bounds are valid (max >= min)
+    // If image is smaller than container, bounds might be reversed - in that case, allow free movement
+    if (maxX < minX || maxY < minY) {
+      // Image is smaller than container, allow free movement within reason
+      return { x, y };
+    }
 
     // Clamp the position
     const clampedX = Math.max(minX, Math.min(maxX, x));
