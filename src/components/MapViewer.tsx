@@ -130,7 +130,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       // Apply damping factor (0.5) to reduce sensitivity
       const distanceRatio = currentDistance / pinchStartRef.current.distance;
       const scaleChange = (distanceRatio - 1) * 0.5 + 1; // Damping: 50% sensitivity
-      const newScale = Math.max(0.25, Math.min(3, pinchStartRef.current.scale * scaleChange));
+      // Limit zoom out to 1.2x (minimum scale = 1/1.2 ≈ 0.833) and zoom in to 2x (maximum scale = 2)
+      const newScale = Math.max(0.833, Math.min(2, pinchStartRef.current.scale * scaleChange));
       
       // Calculate center point of current pinch
       const centerX = (touch1.clientX + touch2.clientX) / 2;
@@ -170,8 +171,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const mouseY = e.clientY - rect.top;
     
     const delta = e.deltaY * -0.001;
-    // Allow zoom out to 0.25 (twice as far as before)
-    const newScale = Math.max(0.25, Math.min(3, scale + delta));
+    // Limit zoom out to 1.2x (minimum scale = 1/1.2 ≈ 0.833) and zoom in to 2x (maximum scale = 2)
+    const newScale = Math.max(0.833, Math.min(2, scale + delta));
     const scaleChange = newScale / scale;
     
     // Zoom towards mouse position
