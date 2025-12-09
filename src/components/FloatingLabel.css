@@ -84,26 +84,34 @@
 }
 
 /* Responsive scaling for label UI */
-/* Below 1000px: 80% of original size */
-@media (max-width: 1000px) {
+/* Below 1600px: 80% of original size */
+@media (max-width: 1600px) {
   .floating-label {
     transform: scale(0.8);
     transform-origin: top left;
   }
 }
 
-/* Below 600px: 60% of original size */
-@media (max-width: 600px) {
+/* Below 1000px: 60% of original size */
+@media (max-width: 1000px) {
   .floating-label {
     transform: scale(0.6);
     transform-origin: top left;
   }
 }
 
-/* Below 300px: 30% of original size */
+/* Below 600px: 40% of original size */
+@media (max-width: 600px) {
+  .floating-label {
+    transform: scale(0.4);
+    transform-origin: top left;
+  }
+}
+
+/* Below 300px: 20% of original size */
 @media (max-width: 300px) {
   .floating-label {
-    transform: scale(0.3);
+    transform: scale(0.2);
     transform-origin: top left;
   }
 }

@@ -15,6 +15,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   const imageRef = useRef<HTMLImageElement>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const positionRef = useRef(position);
+  const pinchStartRef = useRef<{ distance: number; scale: number; center: { x: number; y: number } } | null>(null);
 
   // Keep position ref in sync
   useEffect(() => {
@@ -81,15 +82,9 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     if (e.touches.length === 1) {
       e.preventDefault(); // Prevent default touch behavior
       handleStart(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 1 && isDragging) {
-      e.preventDefault(); // Only prevent default when dragging
-      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+      pinchStartRef.current = null; // Reset pinch state on single touch
     } else if (e.touches.length === 2) {
-      // Pinch zoom
+      // Initialize pinch zoom
       e.preventDefault();
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
@@ -98,14 +93,70 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         touch2.clientY - touch1.clientY
       );
       
-      // Simple pinch zoom - allow zoom out to 0.25 (twice as far)
-      const newScale = Math.max(0.25, Math.min(3, scale * (distance / 200)));
-      setScale(newScale);
+      // Calculate center point between the two touches
+      const centerX = (touch1.clientX + touch2.clientX) / 2;
+      const centerY = (touch1.clientY + touch2.clientY) / 2;
+      
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        pinchStartRef.current = {
+          distance,
+          scale,
+          center: {
+            x: centerX - rect.left,
+            y: centerY - rect.top,
+          },
+        };
+      }
+      setIsDragging(false); // Stop dragging when pinching starts
+    }
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDragging && !pinchStartRef.current) {
+      e.preventDefault(); // Only prevent default when dragging
+      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    } else if (e.touches.length === 2 && pinchStartRef.current) {
+      // Pinch zoom with reduced sensitivity
+      e.preventDefault();
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const currentDistance = Math.hypot(
+        touch2.clientX - touch1.clientX,
+        touch2.clientY - touch1.clientY
+      );
+      
+      // Calculate scale change based on ratio of distances
+      // Apply damping factor (0.5) to reduce sensitivity
+      const distanceRatio = currentDistance / pinchStartRef.current.distance;
+      const scaleChange = (distanceRatio - 1) * 0.5 + 1; // Damping: 50% sensitivity
+      const newScale = Math.max(0.25, Math.min(3, pinchStartRef.current.scale * scaleChange));
+      
+      // Calculate center point of current pinch
+      const centerX = (touch1.clientX + touch2.clientX) / 2;
+      const centerY = (touch1.clientY + touch2.clientY) / 2;
+      
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const currentCenter = {
+          x: centerX - rect.left,
+          y: centerY - rect.top,
+        };
+        
+        // Zoom towards the center of the pinch
+        const scaleRatio = newScale / pinchStartRef.current.scale;
+        const newX = currentCenter.x - (currentCenter.x - positionRef.current.x) * scaleRatio;
+        const newY = currentCenter.y - (currentCenter.y - positionRef.current.y) * scaleRatio;
+        
+        setScale(newScale);
+        setPosition({ x: newX, y: newY });
+      }
     }
   };
 
   const onTouchEnd = () => {
     handleEnd();
+    pinchStartRef.current = null; // Reset pinch state
   };
 
   // Wheel zoom - zoom towards mouse position
