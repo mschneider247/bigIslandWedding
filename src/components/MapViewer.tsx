@@ -15,52 +15,22 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   const imageRef = useRef<HTMLImageElement>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const positionRef = useRef(position);
+  const scaleRef = useRef(scale);
+  const isDraggingRef = useRef(isDragging);
   const pinchStartRef = useRef<{ distance: number; scale: number; center: { x: number; y: number } } | null>(null);
 
-  // Keep position ref in sync
+  // Keep refs in sync
   useEffect(() => {
     positionRef.current = position;
   }, [position]);
 
-  // Clamp position to keep within bounds (max 200px border)
-  const clampPosition = useCallback((x: number, y: number, currentScale: number) => {
-    if (!containerRef.current || !imageRef.current) {
-      return { x, y };
-    }
+  useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
 
-    const container = containerRef.current;
-    const image = imageRef.current;
-    const maxBorder = 200;
-
-    // Calculate scaled image dimensions (accounting for JavaScript scale only)
-    // CSS scale from media queries affects visual size but layout calculations use natural dimensions
-    const scaledWidth = image.naturalWidth * currentScale;
-    const scaledHeight = image.naturalHeight * currentScale;
-
-    // Calculate bounds - allow up to 200px of border on any side
-    // Left edge: can't scroll more than 200px to the left
-    const minX = -maxBorder;
-    // Right edge: image right edge (x + scaledWidth) should not exceed container width + 200px
-    const maxX = container.clientWidth - scaledWidth + maxBorder;
-
-    // Top edge: can't scroll more than 200px up
-    const minY = -maxBorder;
-    // Bottom edge: image bottom edge (y + scaledHeight) should not exceed container height + 200px
-    const maxY = container.clientHeight - scaledHeight + maxBorder;
-
-    // Only clamp if bounds are valid (max >= min)
-    // If image is smaller than container, bounds might be reversed - in that case, allow free movement
-    if (maxX < minX || maxY < minY) {
-      // Image is smaller than container, allow free movement within reason
-      return { x, y };
-    }
-
-    // Clamp the position
-    const clampedX = Math.max(minX, Math.min(maxX, x));
-    const clampedY = Math.max(minY, Math.min(maxY, y));
-
-    return { x: clampedX, y: clampedY };
-  }, []);
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
 
   // Handle mouse/touch start
   const handleStart = useCallback((clientX: number, clientY: number) => {
@@ -77,9 +47,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       x: clientX - dragStartRef.current.x,
       y: clientY - dragStartRef.current.y,
     };
-    const clamped = clampPosition(newPosition.x, newPosition.y, scale);
-    setPosition(clamped);
-  }, [scale, clampPosition]);
+    setPosition(newPosition);
+  }, []);
 
   // Handle mouse/touch end
   const handleEnd = useCallback(() => {
@@ -90,6 +59,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   useEffect(() => {
     if (isDragging) {
       const handleMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
         handleMove(e.clientX, e.clientY);
       };
 
@@ -97,8 +67,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         handleEnd();
       };
 
-      // Use global listeners for smoother dragging
-      document.addEventListener('mousemove', handleMouseMove);
+      // Use global listeners for smoother dragging (non-passive for preventDefault)
+      document.addEventListener('mousemove', handleMouseMove, { passive: false });
       document.addEventListener('mouseup', handleMouseUp);
 
       return () => {
@@ -107,6 +77,101 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       };
     }
   }, [isDragging, handleMove, handleEnd]);
+
+  // Touch events with native listeners (non-passive to allow preventDefault)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        setIsDragging(true);
+        dragStartRef.current = {
+          x: e.touches[0].clientX - positionRef.current.x,
+          y: e.touches[0].clientY - positionRef.current.y,
+        };
+        pinchStartRef.current = null;
+      } else if (e.touches.length === 2) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const distance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        
+        const centerX = (touch1.clientX + touch2.clientX) / 2;
+        const centerY = (touch1.clientY + touch2.clientY) / 2;
+        
+        const rect = container.getBoundingClientRect();
+        pinchStartRef.current = {
+          distance,
+          scale: scaleRef.current,
+          center: {
+            x: centerX - rect.left,
+            y: centerY - rect.top,
+          },
+        };
+        setIsDragging(false);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1 && isDraggingRef.current && !pinchStartRef.current) {
+        e.preventDefault();
+        const newPosition = {
+          x: e.touches[0].clientX - dragStartRef.current.x,
+          y: e.touches[0].clientY - dragStartRef.current.y,
+        };
+        setPosition(newPosition);
+      } else if (e.touches.length === 2 && pinchStartRef.current) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        
+        const distanceRatio = currentDistance / pinchStartRef.current.distance;
+        const scaleChange = (distanceRatio - 1) * 0.5 + 1;
+        const newScale = Math.max(0.4, Math.min(2, pinchStartRef.current.scale * scaleChange));
+        
+        const centerX = (touch1.clientX + touch2.clientX) / 2;
+        const centerY = (touch1.clientY + touch2.clientY) / 2;
+        
+        const rect = container.getBoundingClientRect();
+        const currentCenter = {
+          x: centerX - rect.left,
+          y: centerY - rect.top,
+        };
+        
+        const scaleRatio = newScale / pinchStartRef.current.scale;
+        const newX = currentCenter.x - (currentCenter.x - positionRef.current.x) * scaleRatio;
+        const newY = currentCenter.y - (currentCenter.y - positionRef.current.y) * scaleRatio;
+        
+        setScale(newScale);
+        setPosition({ x: newX, y: newY });
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      pinchStartRef.current = null;
+    };
+
+    // Use native listeners with passive: false to allow preventDefault
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -117,90 +182,6 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     if (isDragging) {
       handleEnd();
     }
-  };
-
-  // Touch events
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      e.preventDefault(); // Prevent default touch behavior
-      handleStart(e.touches[0].clientX, e.touches[0].clientY);
-      pinchStartRef.current = null; // Reset pinch state on single touch
-    } else if (e.touches.length === 2) {
-      // Initialize pinch zoom
-      e.preventDefault();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      
-      // Calculate center point between the two touches
-      const centerX = (touch1.clientX + touch2.clientX) / 2;
-      const centerY = (touch1.clientY + touch2.clientY) / 2;
-      
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        pinchStartRef.current = {
-          distance,
-          scale,
-          center: {
-            x: centerX - rect.left,
-            y: centerY - rect.top,
-          },
-        };
-      }
-      setIsDragging(false); // Stop dragging when pinching starts
-    }
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 1 && isDragging && !pinchStartRef.current) {
-      e.preventDefault(); // Only prevent default when dragging
-      handleMove(e.touches[0].clientX, e.touches[0].clientY);
-    } else if (e.touches.length === 2 && pinchStartRef.current) {
-      // Pinch zoom with reduced sensitivity
-      e.preventDefault();
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const currentDistance = Math.hypot(
-        touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
-      );
-      
-      // Calculate scale change based on ratio of distances
-      // Apply damping factor (0.5) to reduce sensitivity
-      const distanceRatio = currentDistance / pinchStartRef.current.distance;
-      const scaleChange = (distanceRatio - 1) * 0.5 + 1; // Damping: 50% sensitivity
-      // Limit zoom out to 1.2x (minimum scale = 1/1.2 ≈ 0.833) and zoom in to 2x (maximum scale = 2)
-      const newScale = Math.max(0.833, Math.min(2, pinchStartRef.current.scale * scaleChange));
-      
-      // Calculate center point of current pinch
-      const centerX = (touch1.clientX + touch2.clientX) / 2;
-      const centerY = (touch1.clientY + touch2.clientY) / 2;
-      
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const currentCenter = {
-          x: centerX - rect.left,
-          y: centerY - rect.top,
-        };
-        
-        // Zoom towards the center of the pinch
-        const scaleRatio = newScale / pinchStartRef.current.scale;
-        const newX = currentCenter.x - (currentCenter.x - positionRef.current.x) * scaleRatio;
-        const newY = currentCenter.y - (currentCenter.y - positionRef.current.y) * scaleRatio;
-        
-        setScale(newScale);
-        const clamped = clampPosition(newX, newY, newScale);
-        setPosition(clamped);
-      }
-    }
-  };
-
-  const onTouchEnd = () => {
-    handleEnd();
-    pinchStartRef.current = null; // Reset pinch state
   };
 
   // Wheel zoom - zoom towards mouse position
@@ -214,8 +195,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const mouseY = e.clientY - rect.top;
     
     const delta = e.deltaY * -0.001;
-    // Limit zoom out to 1.2x (minimum scale = 1/1.2 ≈ 0.833) and zoom in to 2x (maximum scale = 2)
-    const newScale = Math.max(0.833, Math.min(2, scale + delta));
+    // Limit zoom out to 2.5x (minimum scale = 1/2.5 = 0.4) and zoom in to 2x (maximum scale = 2)
+    const newScale = Math.max(0.4, Math.min(2, scale + delta));
     const scaleChange = newScale / scale;
     
     // Zoom towards mouse position
@@ -223,9 +204,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const newY = mouseY - (mouseY - position.y) * scaleChange;
     
     setScale(newScale);
-    const clamped = clampPosition(newX, newY, newScale);
-    setPosition(clamped);
-  }, [scale, position, clampPosition]);
+    setPosition({ x: newX, y: newY });
+  }, [scale, position]);
 
   // Center the image on initial load
   useEffect(() => {
@@ -237,10 +217,9 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       const centerX = (container.clientWidth - image.naturalWidth) / 2;
       const centerY = (container.clientHeight - image.naturalHeight) / 2;
       
-      const clamped = clampPosition(centerX, centerY, scale);
-      setPosition(clamped);
+      setPosition({ x: centerX, y: centerY });
     }
-  }, [imageLoaded, scale, clampPosition]);
+  }, [imageLoaded]);
 
   // Handle image load
   const handleImageLoad = useCallback(() => {
@@ -253,9 +232,6 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       className="map-viewer"
       onMouseDown={onMouseDown}
       onMouseLeave={onMouseLeave}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
       onWheel={onWheel}
       style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
