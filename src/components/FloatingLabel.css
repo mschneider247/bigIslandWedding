@@ -83,6 +83,31 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Responsive scaling for label UI */
+/* Below 1000px: 80% of original size */
+@media (max-width: 1000px) {
+  .floating-label {
+    transform: scale(0.8);
+    transform-origin: top left;
+  }
+}
+
+/* Below 600px: 60% of original size */
+@media (max-width: 600px) {
+  .floating-label {
+    transform: scale(0.6);
+    transform-origin: top left;
+  }
+}
+
+/* Below 300px: 30% of original size */
+@media (max-width: 300px) {
+  .floating-label {
+    transform: scale(0.3);
+    transform-origin: top left;
+  }
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .floating-label {

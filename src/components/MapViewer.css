@@ -25,6 +25,30 @@
   height: auto;
 }
 
+/* Responsive scaling for map image */
+/* Below 1000px: 80% of original size */
+@media (max-width: 1000px) {
+  .map-image {
+    transform: scale(0.8);
+    transform-origin: top left;
+  }
+}
+
+/* Below 600px: 60% of original size */
+@media (max-width: 600px) {
+  .map-image {
+    transform: scale(0.6);
+    transform-origin: top left;
+  }
+}
+
+/* Below 300px: 30% of original size */
+@media (max-width: 300px) {
+  .map-image {
+    transform: scale(0.3);
+    transform-origin: top left;
+  }
+}
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
