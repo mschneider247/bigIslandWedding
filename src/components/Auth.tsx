@@ -282,3 +282,6 @@ function PrivacyInfo({ onBack }: { onBack: () => void }) {
     </div>
   );
 }
+
+
+

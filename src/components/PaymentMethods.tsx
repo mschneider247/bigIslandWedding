@@ -99,7 +99,8 @@ export default function PaymentMethods({
         <button className="payment-modal-close" onClick={onClose}>
           ×
         </button>
-        <h2 className="payment-modal-title">Payment Options</h2>
+        <p>You're presense is considered</p>
+        <h2 className="payment-modal-title">Gift Options</h2>
         
         <div className="payment-options">
           {/* Venmo Option - First */}

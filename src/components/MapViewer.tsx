@@ -32,6 +32,32 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
 
+  // Calculate bounds and clamp position
+  const clampPosition = useCallback((pos: { x: number; y: number }, currentScale: number) => {
+    if (!containerRef.current || !imageRef.current || !imageLoaded) {
+      return pos;
+    }
+
+    const container = containerRef.current;
+    const image = imageRef.current;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    const scaledWidth = image.naturalWidth * currentScale;
+    const scaledHeight = image.naturalHeight * currentScale;
+
+    // Calculate bounds: image should not go beyond container edges
+    const minX = containerWidth - scaledWidth;
+    const maxX = 0;
+    const minY = containerHeight - scaledHeight;
+    const maxY = 0;
+
+    // Clamp position within bounds
+    return {
+      x: Math.max(minX, Math.min(maxX, pos.x)),
+      y: Math.max(minY, Math.min(maxY, pos.y)),
+    };
+  }, [imageLoaded]);
+
   // Handle mouse/touch start
   const handleStart = useCallback((clientX: number, clientY: number) => {
     setIsDragging(true);
@@ -47,8 +73,9 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       x: clientX - dragStartRef.current.x,
       y: clientY - dragStartRef.current.y,
     };
-    setPosition(newPosition);
-  }, []);
+    const clampedPosition = clampPosition(newPosition, scaleRef.current);
+    setPosition(clampedPosition);
+  }, [clampPosition]);
 
   // Handle mouse/touch end
   const handleEnd = useCallback(() => {
@@ -124,7 +151,8 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
           x: e.touches[0].clientX - dragStartRef.current.x,
           y: e.touches[0].clientY - dragStartRef.current.y,
         };
-        setPosition(newPosition);
+        const clampedPosition = clampPosition(newPosition, scaleRef.current);
+        setPosition(clampedPosition);
       } else if (e.touches.length === 2 && pinchStartRef.current) {
         e.preventDefault();
         const touch1 = e.touches[0];
@@ -151,8 +179,9 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         const newX = currentCenter.x - (currentCenter.x - positionRef.current.x) * scaleRatio;
         const newY = currentCenter.y - (currentCenter.y - positionRef.current.y) * scaleRatio;
         
+        const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
         setScale(newScale);
-        setPosition({ x: newX, y: newY });
+        setPosition(clampedPosition);
       }
     };
 
@@ -171,7 +200,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, []);
+  }, [clampPosition]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -203,9 +232,10 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const newX = mouseX - (mouseX - position.x) * scaleChange;
     const newY = mouseY - (mouseY - position.y) * scaleChange;
     
+    const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
     setScale(newScale);
-    setPosition({ x: newX, y: newY });
-  }, [scale, position]);
+    setPosition(clampedPosition);
+  }, [scale, position, clampPosition]);
 
   // Center the image on initial load
   useEffect(() => {
@@ -217,9 +247,10 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       const centerX = (container.clientWidth - image.naturalWidth) / 2;
       const centerY = (container.clientHeight - image.naturalHeight) / 2;
       
-      setPosition({ x: centerX, y: centerY });
+      const clampedPosition = clampPosition({ x: centerX, y: centerY }, scale);
+      setPosition(clampedPosition);
     }
-  }, [imageLoaded]);
+  }, [imageLoaded, scale, clampPosition]);
 
   // Handle image load
   const handleImageLoad = useCallback(() => {

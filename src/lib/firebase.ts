@@ -11,7 +11,7 @@ import {
   onAuthStateChanged,
   type User
 } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, type Firestore } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, onSnapshot, type Firestore } from 'firebase/firestore';
 import { config } from '../config';
 
 // Re-export User type for convenience
@@ -118,12 +118,8 @@ export const createCheckoutSession = async (
   const defaultSuccessUrl = successUrl || window.location.origin + '/payment-success';
   const defaultCancelUrl = cancelUrl || window.location.origin + '/payment-cancel';
 
-  // Ensure customer document exists (extension may require this)
-  const customerRef = doc(db, `customers/${user.uid}`);
-  await setDoc(customerRef, { 
-    email: user.email || '',
-    metadata: { created: new Date().toISOString() }
-  }, { merge: true });
+  // Note: The Stripe extension will automatically create the customer document
+  // when needed. We don't need to create it manually - the extension handles this.
 
   // Create a document in the checkout_sessions subcollection
   // The extension will watch for new documents and create the Stripe checkout session
