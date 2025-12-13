@@ -11,6 +11,7 @@ function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isNightMode, setIsNightMode] = useState(false);
 
   // Initialize Firebase and listen for auth changes
   useEffect(() => {
@@ -63,14 +64,18 @@ function App() {
     }
   };
 
+  const mapImageUrl = isNightMode ? '/back.jpg' : config.mapImage;
+
   return (
     <div className="app">
-      <MapViewer mapImageUrl={config.mapImage}>
+      <MapViewer mapImageUrl={mapImageUrl}>
         <FloatingLabel
           title={config.mapTitle}
           description={config.mapDescription}
           onSurveyClick={handleSurveyClick}
           onPaymentClick={handlePaymentClick}
+          isNightMode={isNightMode}
+          onToggleMode={() => setIsNightMode(!isNightMode)}
         />
       </MapViewer>
       
