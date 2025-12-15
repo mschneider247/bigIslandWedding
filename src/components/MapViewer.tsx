@@ -18,7 +18,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   const scaleRef = useRef(scale);
   const isDraggingRef = useRef(isDragging);
   const pinchStartRef = useRef<{ distance: number; scale: number; center: { x: number; y: number } } | null>(null);
-  const resetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Keep refs in sync
   useEffect(() => {
@@ -254,18 +254,13 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         const maxScale = isMobile ? 1.5 : 2;
         const newScale = Math.max(minScale, Math.min(maxScale, pinchStartRef.current.scale * scaleChange));
         
-        const centerX = (touch1.clientX + touch2.clientX) / 2;
-        const centerY = (touch1.clientY + touch2.clientY) / 2;
-        
-        const rect = container.getBoundingClientRect();
-        const currentCenter = {
-          x: centerX - rect.left,
-          y: centerY - rect.top,
-        };
+        // Use center of viewport instead of pinch center
+        const centerX = container.clientWidth / 2;
+        const centerY = container.clientHeight / 2;
         
         const scaleRatio = newScale / pinchStartRef.current.scale;
-        const newX = currentCenter.x - (currentCenter.x - positionRef.current.x) * scaleRatio;
-        const newY = currentCenter.y - (currentCenter.y - positionRef.current.y) * scaleRatio;
+        const newX = centerX - (centerX - positionRef.current.x) * scaleRatio;
+        const newY = centerY - (centerY - positionRef.current.y) * scaleRatio;
         
         const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
         setScale(newScale);
@@ -329,24 +324,24 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     }
   };
 
-  // Wheel zoom - zoom towards mouse position
+  // Wheel zoom - zoom towards center of viewport
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     if (!containerRef.current || !imageRef.current) return;
     
     const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    // Use center of viewport instead of mouse position
+    const centerX = container.clientWidth / 2;
+    const centerY = container.clientHeight / 2;
     
     const delta = e.deltaY * -0.001;
     // Limit zoom out to 2.5x (minimum scale = 1/2.5 = 0.4) and zoom in to 2x (maximum scale = 2)
     const newScale = Math.max(0.4, Math.min(2, scale + delta));
     const scaleChange = newScale / scale;
     
-    // Zoom towards mouse position
-    const newX = mouseX - (mouseX - position.x) * scaleChange;
-    const newY = mouseY - (mouseY - position.y) * scaleChange;
+    // Zoom towards center of viewport
+    const newX = centerX - (centerX - position.x) * scaleChange;
+    const newY = centerY - (centerY - position.y) * scaleChange;
     
     const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
     setScale(newScale);
