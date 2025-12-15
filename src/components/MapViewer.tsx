@@ -18,6 +18,7 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   const scaleRef = useRef(scale);
   const isDraggingRef = useRef(isDragging);
   const pinchStartRef = useRef<{ distance: number; scale: number; center: { x: number; y: number } } | null>(null);
+  const resetTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs in sync
   useEffect(() => {
@@ -31,6 +32,37 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   useEffect(() => {
     isDraggingRef.current = isDragging;
   }, [isDragging]);
+
+  // Check if position is too far off screen (for reset)
+  const isPositionOffScreen = useCallback((pos: { x: number; y: number }, currentScale: number) => {
+    if (!containerRef.current || !imageRef.current || !imageLoaded) {
+      return false;
+    }
+
+    const container = containerRef.current;
+    const image = imageRef.current;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    const scaledWidth = image.naturalWidth * currentScale;
+    const scaledHeight = image.naturalHeight * currentScale;
+
+    // Calculate bounds
+    const minX = containerWidth - scaledWidth;
+    const maxX = 0;
+    const minY = containerHeight - scaledHeight;
+    const maxY = 0;
+
+    // Check if position is way outside bounds (more than 50% of container size)
+    const thresholdX = containerWidth * 0.5;
+    const thresholdY = containerHeight * 0.5;
+    
+    return (
+      pos.x > maxX + thresholdX ||
+      pos.x < minX - thresholdX ||
+      pos.y > maxY + thresholdY ||
+      pos.y < minY - thresholdY
+    );
+  }, [imageLoaded]);
 
   // Calculate bounds and clamp position
   const clampPosition = useCallback((pos: { x: number; y: number }, currentScale: number) => {
@@ -46,16 +78,52 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     const scaledHeight = image.naturalHeight * currentScale;
 
     // Calculate bounds: image should not go beyond container edges
-    const minX = containerWidth - scaledWidth;
-    const maxX = 0;
-    const minY = containerHeight - scaledHeight;
-    const maxY = 0;
+    // If scaled image is larger than container, clamp to prevent edges from going past container
+    // If scaled image is smaller than container, allow movement but keep it within container bounds
+    let minX: number, maxX: number, minY: number, maxY: number;
+    
+    if (scaledWidth > containerWidth) {
+      // Image is larger: prevent left edge from going past right, and right edge from going past left
+      minX = containerWidth - scaledWidth; // Most right position (left edge at right side)
+      maxX = 0; // Most left position (left edge at left side)
+    } else {
+      // Image is smaller: allow it to move but keep it within container
+      minX = 0; // Can't move left past container edge
+      maxX = containerWidth - scaledWidth; // Can't move right past container edge
+    }
+    
+    if (scaledHeight > containerHeight) {
+      // Image is larger: prevent top edge from going past bottom, and bottom edge from going past top
+      minY = containerHeight - scaledHeight; // Most bottom position (top edge at bottom)
+      maxY = 0; // Most top position (top edge at top)
+    } else {
+      // Image is smaller: allow it to move but keep it within container
+      minY = 0; // Can't move up past container edge
+      maxY = containerHeight - scaledHeight; // Can't move down past container edge
+    }
 
-    // Clamp position within bounds
+    // Clamp position within bounds - ensure it never goes outside
     return {
       x: Math.max(minX, Math.min(maxX, pos.x)),
       y: Math.max(minY, Math.min(maxY, pos.y)),
     };
+  }, [imageLoaded]);
+
+  // Reset map to center position
+  const resetMap = useCallback(() => {
+    if (!containerRef.current || !imageRef.current || !imageLoaded) {
+      return;
+    }
+
+    const container = containerRef.current;
+    const image = imageRef.current;
+    
+    // Reset to center with scale 1
+    const centerX = (container.clientWidth - image.naturalWidth) / 2;
+    const centerY = (container.clientHeight - image.naturalHeight) / 2;
+    
+    setScale(1);
+    setPosition({ x: centerX, y: centerY });
   }, [imageLoaded]);
 
   // Handle mouse/touch start
@@ -153,6 +221,21 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         };
         const clampedPosition = clampPosition(newPosition, scaleRef.current);
         setPosition(clampedPosition);
+        
+        // Check if position is off screen and schedule reset
+        if (isPositionOffScreen(clampedPosition, scaleRef.current)) {
+          if (resetTimeoutRef.current) {
+            clearTimeout(resetTimeoutRef.current);
+          }
+          resetTimeoutRef.current = setTimeout(() => {
+            resetMap();
+          }, 500);
+        } else {
+          if (resetTimeoutRef.current) {
+            clearTimeout(resetTimeoutRef.current);
+            resetTimeoutRef.current = null;
+          }
+        }
       } else if (e.touches.length === 2 && pinchStartRef.current) {
         e.preventDefault();
         const touch1 = e.touches[0];
@@ -164,7 +247,12 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         
         const distanceRatio = currentDistance / pinchStartRef.current.distance;
         const scaleChange = (distanceRatio - 1) * 0.5 + 1;
-        const newScale = Math.max(0.4, Math.min(2, pinchStartRef.current.scale * scaleChange));
+        
+        // Limit zoom more strictly on mobile (detect via touch)
+        const isMobile = window.innerWidth <= 768;
+        const minScale = isMobile ? 0.6 : 0.4;
+        const maxScale = isMobile ? 1.5 : 2;
+        const newScale = Math.max(minScale, Math.min(maxScale, pinchStartRef.current.scale * scaleChange));
         
         const centerX = (touch1.clientX + touch2.clientX) / 2;
         const centerY = (touch1.clientY + touch2.clientY) / 2;
@@ -182,12 +270,37 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
         const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
         setScale(newScale);
         setPosition(clampedPosition);
+        
+        // Check if position is off screen and schedule reset
+        if (isPositionOffScreen(clampedPosition, newScale)) {
+          if (resetTimeoutRef.current) {
+            clearTimeout(resetTimeoutRef.current);
+          }
+          resetTimeoutRef.current = setTimeout(() => {
+            resetMap();
+          }, 500);
+        } else {
+          if (resetTimeoutRef.current) {
+            clearTimeout(resetTimeoutRef.current);
+            resetTimeoutRef.current = null;
+          }
+        }
       }
     };
 
     const handleTouchEnd = () => {
       setIsDragging(false);
       pinchStartRef.current = null;
+      
+      // Final check after touch ends - if map is off screen, reset it
+      if (isPositionOffScreen(positionRef.current, scaleRef.current)) {
+        if (resetTimeoutRef.current) {
+          clearTimeout(resetTimeoutRef.current);
+        }
+        resetTimeoutRef.current = setTimeout(() => {
+          resetMap();
+        }, 300);
+      }
     };
 
     // Use native listeners with passive: false to allow preventDefault
@@ -199,8 +312,11 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
+      if (resetTimeoutRef.current) {
+        clearTimeout(resetTimeoutRef.current);
+      }
     };
-  }, [clampPosition]);
+  }, [clampPosition, isPositionOffScreen, resetMap]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();

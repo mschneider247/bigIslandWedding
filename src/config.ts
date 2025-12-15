@@ -28,7 +28,8 @@ export const config = {
   firebase: {
     // These will be added when Firebase is configured
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+    // authDomain should be just the domain (no protocol) - Firebase SDK handles HTTPS automatically
+    authDomain: (import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '').replace(/^https?:\/\//, ''),
     projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
     // Add other Firebase config as needed
   },

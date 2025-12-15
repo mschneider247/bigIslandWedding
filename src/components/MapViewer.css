@@ -61,7 +61,7 @@
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .map-viewer {
-    touch-action: pan-x pan-y pinch-zoom;
+    touch-action: none; /* Disable native pinch-zoom to prevent conflicts */
   }
 }
 
