@@ -101,8 +101,8 @@ export default function PaymentMethods({
         <button className="payment-modal-close" onClick={onClose}>
           ×
         </button>
-        <p>You're presense is considered</p>
-        <h2 className="payment-modal-title">Gift Options</h2>
+        <p>Your presence is considered the greatest gift of all.</p>
+        <h2 className="payment-modal-title">Adventure Options</h2>
         
         <div className="payment-options">
           {/* Venmo Option - First */}
