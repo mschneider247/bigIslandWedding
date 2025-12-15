@@ -4,9 +4,10 @@ import './MapViewer.css';
 interface MapViewerProps {
   mapImageUrl: string;
   children?: React.ReactNode;
+  onImageLoad?: () => void;
 }
 
-export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
+export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapViewerProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -348,6 +349,11 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
     setPosition(clampedPosition);
   }, [scale, position, clampPosition]);
 
+  // Reset imageLoaded when URL changes
+  useEffect(() => {
+    setImageLoaded(false);
+  }, [mapImageUrl]);
+
   // Center the image on initial load
   useEffect(() => {
     if (imageLoaded && containerRef.current && imageRef.current) {
@@ -366,7 +372,10 @@ export default function MapViewer({ mapImageUrl, children }: MapViewerProps) {
   // Handle image load
   const handleImageLoad = useCallback(() => {
     setImageLoaded(true);
-  }, []);
+    if (onImageLoad) {
+      onImageLoad();
+    }
+  }, [onImageLoad]);
 
   return (
     <div

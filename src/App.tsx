@@ -12,6 +12,8 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isNightMode, setIsNightMode] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [loadingButton, setLoadingButton] = useState<'sun' | 'moon' | null>(null);
 
   // Initialize Firebase and listen for auth changes
   useEffect(() => {
@@ -66,16 +68,29 @@ function App() {
 
   const mapImageUrl = isNightMode ? '/back.jpg' : config.mapImage;
 
+  const handleToggleMode = (buttonType: 'sun' | 'moon') => {
+    setIsImageLoading(true);
+    setLoadingButton(buttonType);
+    setIsNightMode(!isNightMode);
+  };
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+    setLoadingButton(null);
+  };
+
   return (
     <div className="app">
-      <MapViewer mapImageUrl={mapImageUrl}>
+      <MapViewer mapImageUrl={mapImageUrl} onImageLoad={handleImageLoad}>
         <FloatingLabel
           title={config.mapTitle}
           description={config.mapDescription}
           onSurveyClick={handleSurveyClick}
           onPaymentClick={handlePaymentClick}
           isNightMode={isNightMode}
-          onToggleMode={() => setIsNightMode(!isNightMode)}
+          onToggleMode={handleToggleMode}
+          isLoading={isImageLoading}
+          loadingButton={loadingButton}
         />
       </MapViewer>
       

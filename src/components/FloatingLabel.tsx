@@ -6,7 +6,9 @@ interface FloatingLabelProps {
   onSurveyClick: () => void;
   onPaymentClick: () => void;
   isNightMode: boolean;
-  onToggleMode: () => void;
+  onToggleMode: (buttonType: 'sun' | 'moon') => void;
+  isLoading?: boolean;
+  loadingButton?: 'sun' | 'moon' | null;
 }
 
 export default function FloatingLabel({
@@ -16,6 +18,8 @@ export default function FloatingLabel({
   onPaymentClick,
   isNightMode,
   onToggleMode,
+  isLoading = false,
+  loadingButton = null,
 }: FloatingLabelProps) {
   return (
     <div className="floating-label">
@@ -23,10 +27,12 @@ export default function FloatingLabel({
         <img src="/label.png" alt="Label" className="label-image" />
         <div className="day-night-toggle">
           <button
-            className={`toggle-button sun-button ${!isNightMode ? 'active' : ''}`}
-            onClick={onToggleMode}
+            className={`toggle-button sun-button ${!isNightMode ? 'active' : ''} ${loadingButton === 'sun' ? 'loading' : ''}`}
+            onClick={() => onToggleMode('sun')}
             aria-label="Switch to day mode"
+            disabled={isLoading}
           >
+            {loadingButton === 'sun' && <div className="clock-loader"></div>}
             <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" fill={!isNightMode ? "#87CEEB" : "#555"} stroke={!isNightMode ? "#87CEEB" : "#555"} strokeWidth="1"/>
               <circle cx="12" cy="12" r="5" fill={!isNightMode ? "#FFD700" : "#555"} stroke={!isNightMode ? "#FFD700" : "#555"} strokeWidth="1"/>
@@ -34,10 +40,12 @@ export default function FloatingLabel({
             </svg>
           </button>
           <button
-            className={`toggle-button moon-button ${isNightMode ? 'active' : ''}`}
-            onClick={onToggleMode}
+            className={`toggle-button moon-button ${isNightMode ? 'active' : ''} ${loadingButton === 'moon' ? 'loading' : ''}`}
+            onClick={() => onToggleMode('moon')}
             aria-label="Switch to night mode"
+            disabled={isLoading}
           >
+            {loadingButton === 'moon' && <div className="clock-loader"></div>}
             <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" fill="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
