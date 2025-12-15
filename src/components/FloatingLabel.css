@@ -27,7 +27,7 @@
 
 .day-night-toggle {
   display: flex;
-  gap: 8px;
+  gap: 16px;
   margin-bottom: 16px;
   align-items: center;
   justify-content: center;
@@ -39,7 +39,7 @@
 .toggle-button {
   background: transparent;
   border: none;
-  padding: 8px 12px;
+  padding: 16px 20px;
   border-radius: 20px;
   cursor: pointer;
   display: flex;
@@ -54,30 +54,44 @@
 }
 
 .toggle-button svg {
-  width: 20px;
-  height: 20px;
+  width: 80px;
+  height: 80px;
 }
 
-/* Sun button - always shows yellow sun with light blue circle */
-.sun-button {
+/* Sun button - on state: white center, bright yellow surrounding */
+.sun-button.active {
   color: #FFD700;
 }
 
-.sun-button svg {
+.sun-button.active svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Sun button - off state: dark grey for both colors */
+.sun-button:not(.active) {
+  color: #555;
+}
+
+.sun-button:not(.active) svg {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
-/* Moon button - grey when inactive, white when active */
-.moon-button {
-  color: #999;
-}
-
+/* Moon button - on state: white */
 .moon-button.active {
   color: white;
 }
 
 .moon-button.active svg {
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Moon button - off state: dark grey (same as sun) */
+.moon-button:not(.active) {
+  color: #555;
+}
+
+.moon-button:not(.active) svg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 
 .label-title {
