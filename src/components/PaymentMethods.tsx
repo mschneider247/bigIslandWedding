@@ -67,11 +67,13 @@ export default function PaymentMethods({
 
     try {
       // Create Stripe checkout session using the extension
+      // Force HTTPS to prevent mixed content warnings
+      const origin = window.location.origin.replace(/^http:/, 'https:');
       const session = await createCheckoutSession(
         paymentAmount,
         'USD',
-        `${window.location.origin}/payment-success`,
-        `${window.location.origin}/payment-cancel`
+        `${origin}/payment-success`,
+        `${origin}/payment-cancel`
       );
 
       // If session has a URL, redirect to Stripe Checkout

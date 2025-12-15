@@ -115,8 +115,10 @@ export const createCheckoutSession = async (
   }
 
   // Ensure URLs have default values if not provided
-  const defaultSuccessUrl = successUrl || window.location.origin + '/payment-success';
-  const defaultCancelUrl = cancelUrl || window.location.origin + '/payment-cancel';
+  // Force HTTPS to prevent mixed content warnings
+  const origin = window.location.origin.replace(/^http:/, 'https:');
+  const defaultSuccessUrl = successUrl || origin + '/payment-success';
+  const defaultCancelUrl = cancelUrl || origin + '/payment-cancel';
 
   // Note: The Stripe extension will automatically create the customer document
   // when needed. We don't need to create it manually - the extension handles this.
