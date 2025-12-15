@@ -9,7 +9,7 @@ interface MapViewerProps {
 
 export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapViewerProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0.2); // Start at most zoomed out
   const [isDragging, setIsDragging] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,11 +119,11 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     const container = containerRef.current;
     const image = imageRef.current;
     
-    // Reset to center with scale 1
-    const centerX = (container.clientWidth - image.naturalWidth) / 2;
-    const centerY = (container.clientHeight - image.naturalHeight) / 2;
+    // Reset to center with most zoomed out scale
+    const centerX = (container.clientWidth - image.naturalWidth * 0.2) / 2;
+    const centerY = (container.clientHeight - image.naturalHeight * 0.2) / 2;
     
-    setScale(1);
+    setScale(0.2);
     setPosition({ x: centerX, y: centerY });
   }, [imageLoaded]);
 
@@ -251,7 +251,7 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
         
         // Limit zoom more strictly on mobile (detect via touch)
         const isMobile = window.innerWidth <= 768;
-        const minScale = isMobile ? 0.6 : 0.4;
+        const minScale = isMobile ? 0.3 : 0.2;
         const maxScale = isMobile ? 1.5 : 2;
         const newScale = Math.max(minScale, Math.min(maxScale, pinchStartRef.current.scale * scaleChange));
         
@@ -336,8 +336,8 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     const centerY = container.clientHeight / 2;
     
     const delta = e.deltaY * -0.001;
-    // Limit zoom out to 2.5x (minimum scale = 1/2.5 = 0.4) and zoom in to 2x (maximum scale = 2)
-    const newScale = Math.max(0.4, Math.min(2, scale + delta));
+    // Limit zoom out to 5x (minimum scale = 0.2) and zoom in to 2x (maximum scale = 2)
+    const newScale = Math.max(0.2, Math.min(2, scale + delta));
     const scaleChange = newScale / scale;
     
     // Zoom towards center of viewport
@@ -360,9 +360,11 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
       const container = containerRef.current;
       const image = imageRef.current;
       
-      // Center the image initially
-      const centerX = (container.clientWidth - image.naturalWidth) / 2;
-      const centerY = (container.clientHeight - image.naturalHeight) / 2;
+      // Center the image initially (accounting for current scale)
+      const scaledWidth = image.naturalWidth * scale;
+      const scaledHeight = image.naturalHeight * scale;
+      const centerX = (container.clientWidth - scaledWidth) / 2;
+      const centerY = (container.clientHeight - scaledHeight) / 2;
       
       const clampedPosition = clampPosition({ x: centerX, y: centerY }, scale);
       setPosition(clampedPosition);
