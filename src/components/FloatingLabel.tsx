@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import './FloatingLabel.css';
 
 interface FloatingLabelProps {
@@ -21,6 +22,34 @@ export default function FloatingLabel({
   isLoading = false,
   loadingButton = null,
 }: FloatingLabelProps) {
+  // Track if a touch event occurred to prevent double-firing with click
+  const touchHandledRef = useRef(false);
+
+  // Handle touch events for better compatibility with older devices
+  const handleTouchStart = (e: React.TouchEvent, handler: () => void) => {
+    e.stopPropagation(); // Prevent map viewer from capturing the touch
+    touchHandledRef.current = true;
+    handler();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    // Reset after a short delay to allow click event to be suppressed
+    setTimeout(() => {
+      touchHandledRef.current = false;
+    }, 300);
+  };
+
+  // Wrapper for onClick to prevent double-firing when touch was used
+  const handleClick = (e: React.MouseEvent, handler: () => void) => {
+    if (touchHandledRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    handler();
+  };
+
   return (
     <div className="floating-label">
       <div className="label-content">
@@ -28,7 +57,9 @@ export default function FloatingLabel({
         <div className="day-night-toggle">
           <button
             className={`toggle-button sun-button ${!isNightMode ? 'active' : ''} ${loadingButton === 'sun' ? 'loading' : ''}`}
-            onClick={() => onToggleMode('sun')}
+            onClick={(e) => handleClick(e, () => onToggleMode('sun'))}
+            onTouchStart={(e) => handleTouchStart(e, () => onToggleMode('sun'))}
+            onTouchEnd={handleTouchEnd}
             aria-label="Switch to day mode"
             disabled={isLoading}
           >
@@ -41,7 +72,9 @@ export default function FloatingLabel({
           </button>
           <button
             className={`toggle-button moon-button ${isNightMode ? 'active' : ''} ${loadingButton === 'moon' ? 'loading' : ''}`}
-            onClick={() => onToggleMode('moon')}
+            onClick={(e) => handleClick(e, () => onToggleMode('moon'))}
+            onTouchStart={(e) => handleTouchStart(e, () => onToggleMode('moon'))}
+            onTouchEnd={handleTouchEnd}
             aria-label="Switch to night mode"
             disabled={isLoading}
           >
@@ -54,10 +87,20 @@ export default function FloatingLabel({
         <h2 className="label-title">{title}</h2>
         <p className="label-description">{description}</p>
         <div className="label-buttons">
-          <button className="label-button survey-button" onClick={onSurveyClick}>
+          <button 
+            className="label-button survey-button" 
+            onClick={(e) => handleClick(e, onSurveyClick)}
+            onTouchStart={(e) => handleTouchStart(e, onSurveyClick)}
+            onTouchEnd={handleTouchEnd}
+          >
             RSVP
           </button>
-          <button className="label-button payment-button" onClick={onPaymentClick}>
+          <button 
+            className="label-button payment-button" 
+            onClick={(e) => handleClick(e, onPaymentClick)}
+            onTouchStart={(e) => handleTouchStart(e, onPaymentClick)}
+            onTouchEnd={handleTouchEnd}
+          >
             Gift
           </button>
         </div>
