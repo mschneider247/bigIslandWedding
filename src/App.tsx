@@ -3,7 +3,7 @@ import MapViewer from './components/MapViewer';
 import FloatingLabel from './components/FloatingLabel';
 import PaymentMethods from './components/PaymentMethods';
 import Auth from './components/Auth';
-import { config } from './config';
+import { config, withCacheBust } from './config';
 import { initializeFirebase, onAuthChange, getCurrentUser, logout, type User } from './lib/firebase';
 import './App.css';
 
@@ -66,7 +66,7 @@ function App() {
     }
   };
 
-  const mapImageUrl = isNightMode ? '/back.jpg' : config.mapImage;
+  const mapImageUrl = isNightMode ? withCacheBust('/back.jpg') : config.mapImage;
 
   const handleToggleMode = (buttonType: 'sun' | 'moon') => {
     setIsImageLoading(true);

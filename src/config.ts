@@ -7,9 +7,18 @@ const ensureHttps = (url: string): string => {
   return url.replace(/^http:\/\//i, 'https://');
 };
 
+// Cache-busting version - increment this when you update images
+const IMAGE_VERSION = '2';
+
+// Helper function to add cache-busting to image URLs
+export const withCacheBust = (url: string): string => {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${IMAGE_VERSION}`;
+};
+
 export const config = {
   // Map settings
-  mapImage: '/map.jpg', // Place your map image in the public folder
+  mapImage: withCacheBust('/map.jpg'), // Place your map image in the public folder
   
   // Label content
   mapTitle: "Join us for our wedding!",
