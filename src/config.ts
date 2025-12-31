@@ -8,7 +8,7 @@ const ensureHttps = (url: string): string => {
 };
 
 // Cache-busting version - increment this when you update images
-const IMAGE_VERSION = '2';
+const IMAGE_VERSION = '3';
 
 // Helper function to add cache-busting to image URLs
 export const withCacheBust = (url: string): string => {
@@ -19,6 +19,7 @@ export const withCacheBust = (url: string): string => {
 export const config = {
   // Map settings
   mapImage: withCacheBust('/map.jpg'), // Place your map image in the public folder
+  backImage: withCacheBust('/back.jpg'), // Background image for night mode
   
   // Label content
   mapTitle: "Join us for our wedding!",

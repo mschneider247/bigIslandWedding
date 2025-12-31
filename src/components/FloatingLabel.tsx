@@ -1,5 +1,13 @@
 import { useRef } from 'react';
+import CountdownTimer from './CountdownTimer';
 import './FloatingLabel.css';
+
+// Get the wedding date: September 14, 2026 at 12:00 PM HST (Hawaii-Aleutian Standard Time)
+// HST is UTC-10, so 12:00 PM HST = 22:00 UTC (10:00 PM UTC) on the same day
+function getWeddingDate(): Date {
+  // September 14, 2026 at 22:00 UTC = September 14, 2026 at 12:00 PM HST
+  return new Date(Date.UTC(2026, 8, 14, 22, 0, 0)); // Month is 0-indexed, so 8 = September
+}
 
 interface FloatingLabelProps {
   title: string;
@@ -86,6 +94,7 @@ export default function FloatingLabel({
         </div>
         <h2 className="label-title">{title}</h2>
         <p className="label-description">{description}</p>
+        <CountdownTimer targetDate={getWeddingDate()} />
         <div className="label-buttons">
           <button 
             className="label-button survey-button" 

@@ -1,29 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import MapViewer from './components/MapViewer';
 import FloatingLabel from './components/FloatingLabel';
 import PaymentMethods from './components/PaymentMethods';
-import Auth from './components/Auth';
-import { config, withCacheBust } from './config';
-import { initializeFirebase, onAuthChange, getCurrentUser, logout, type User } from './lib/firebase';
+import { config } from './config';
 import './App.css';
 
 function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const [isNightMode, setIsNightMode] = useState(false);
-  const [isImageLoading, setIsImageLoading] = useState(false);
-  const [loadingButton, setLoadingButton] = useState<'sun' | 'moon' | null>(null);
-
-  // Initialize Firebase and listen for auth changes
-  useEffect(() => {
-    initializeFirebase();
-    const unsubscribe = onAuthChange((currentUser) => {
-      setUser(currentUser);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleSurveyClick = () => {
     if (config.surveyUrl) {
@@ -35,53 +19,19 @@ function App() {
   };
 
   const handlePaymentClick = () => {
-    // Always show payment modal - it will handle auth if needed
     setIsPaymentModalOpen(true);
   };
 
-  const handleRequestAuth = () => {
-    // Close payment modal and open auth modal
-    setIsPaymentModalOpen(false);
-    setIsAuthModalOpen(true);
-  };
-
-  const handleAuthSuccess = () => {
-    // After successful auth, reopen payment modal
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-      setUser(currentUser);
-      // Small delay to ensure auth modal closes first
-      setTimeout(() => {
-        setIsPaymentModalOpen(true);
-      }, 100);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const mapImageUrl = isNightMode ? withCacheBust('/back.jpg') : config.mapImage;
-
   const handleToggleMode = (buttonType: 'sun' | 'moon') => {
-    setIsImageLoading(true);
-    setLoadingButton(buttonType);
-    setIsNightMode(!isNightMode);
+    setIsNightMode(buttonType === 'moon');
   };
 
-  const handleImageLoad = () => {
-    setIsImageLoading(false);
-    setLoadingButton(null);
-  };
+  // Determine which image to use based on night mode
+  const currentMapImage = isNightMode ? config.backImage : config.mapImage;
 
   return (
     <div className="app">
-      <MapViewer mapImageUrl={mapImageUrl} onImageLoad={handleImageLoad}>
+      <MapViewer mapImageUrl={currentMapImage}>
         <FloatingLabel
           title={config.mapTitle}
           description={config.mapDescription}
@@ -89,36 +39,15 @@ function App() {
           onPaymentClick={handlePaymentClick}
           isNightMode={isNightMode}
           onToggleMode={handleToggleMode}
-          isLoading={isImageLoading}
-          loadingButton={loadingButton}
         />
       </MapViewer>
-      
-      {/* User info banner */}
-      {user && (
-        <div className="user-info-banner">
-          <span>Signed in as {user.email}</span>
-          <button onClick={handleLogout} className="logout-button">
-            Sign Out
-          </button>
-        </div>
-      )}
-
-      <Auth
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onAuthSuccess={handleAuthSuccess}
-      />
-
       <PaymentMethods
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         venmoUrl={config.venmoUrl}
         checkMailingAddress={config.checkMailingAddress}
-        user={user}
-        onRequestAuth={handleRequestAuth}
       />
-    </div>
+      </div>
   );
 }
 

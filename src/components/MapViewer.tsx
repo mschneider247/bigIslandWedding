@@ -405,6 +405,7 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
           onError={() => {
             console.error('Failed to load map image:', mapImageUrl);
           }}
+          key={mapImageUrl}
         />
       </div>
       {children}
