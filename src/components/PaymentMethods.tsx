@@ -110,7 +110,14 @@ export default function PaymentMethods({
         <button className="payment-modal-close" onClick={onClose}>
           ×
         </button>
-        <p>Your presence is considered the greatest gift of all.</p>
+        <p>Your presence is considered the greatest gift of all, however, if you would like to honor us with a gift, we would be grateful for any contribution to our adventure setup.</p>
+        
+        <div className="truck-section">
+          <img src="/truck.jpg" alt="Truck" className="truck-image" />
+          <p className="truck-text">- "The Taco MAO" (Mobile Adventure Unit).</p>
+          <p>It's our everything vehicle, from groceries to camping. We dream of paying it off to explore farther west, especially to see the Redwoods and Sequoias.</p>
+        </div>
+        
         <h2 className="payment-modal-title">Adventure Options</h2>
         
         <div className="payment-options">
