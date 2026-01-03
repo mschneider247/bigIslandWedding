@@ -8,6 +8,8 @@ import './App.css';
 function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingButton, setLoadingButton] = useState<'sun' | 'moon' | null>(null);
 
   const handleSurveyClick = () => {
     if (config.surveyUrl) {
@@ -23,7 +25,16 @@ function App() {
   };
 
   const handleToggleMode = (buttonType: 'sun' | 'moon') => {
+    // Set loading state when toggling
+    setIsLoading(true);
+    setLoadingButton(buttonType);
     setIsNightMode(buttonType === 'moon');
+  };
+
+  const handleImageLoad = () => {
+    // Clear loading state when image loads
+    setIsLoading(false);
+    setLoadingButton(null);
   };
 
   // Determine which image to use based on night mode
@@ -31,7 +42,7 @@ function App() {
 
   return (
     <div className="app">
-      <MapViewer mapImageUrl={currentMapImage}>
+      <MapViewer mapImageUrl={currentMapImage} onImageLoad={handleImageLoad}>
         <FloatingLabel
           title={config.mapTitle}
           description={config.mapDescription}
@@ -39,6 +50,8 @@ function App() {
           onPaymentClick={handlePaymentClick}
           isNightMode={isNightMode}
           onToggleMode={handleToggleMode}
+          isLoading={isLoading}
+          loadingButton={loadingButton}
         />
       </MapViewer>
       <PaymentMethods
