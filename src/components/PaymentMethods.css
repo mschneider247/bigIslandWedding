@@ -241,6 +241,26 @@
   font-weight: 500;
 }
 
+.payment-sign-out-button {
+  width: 100%;
+  padding: 8px 16px;
+  margin-top: 12px;
+  background: transparent;
+  color: #666;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-sign-out-button:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+  color: #333;
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .payment-modal {
@@ -333,6 +353,18 @@
     background: #3a2222;
     color: #ff9999;
     border-color: #4a3333;
+  }
+
+  .payment-sign-out-button {
+    background: transparent;
+    color: #cccccc;
+    border-color: #333;
+  }
+
+  .payment-sign-out-button:hover {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #ffffff;
   }
 }
 

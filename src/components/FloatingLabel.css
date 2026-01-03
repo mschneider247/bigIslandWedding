@@ -5,7 +5,14 @@
   z-index: 1000;
   pointer-events: none;
   max-width: 600px;
+  transform-origin: top left;
   -webkit-tap-highlight-color: transparent;
+  /* Scale the entire container proportionally based on viewport height */
+  /* Base reference height: 800px - adjust if your content's natural height differs */
+  /* This scales the entire container (text, buttons, padding, margins) proportionally */
+  /* Minimum scale floor: stops shrinking when viewport height is less than 600px */
+  /* At 600px viewport: 50vh = 300px, so min scale = 300px / 800px = 0.375 */
+  transform: scale(max(calc(50vh / 800px), 0.375));
 }
 
 .label-content {
@@ -18,6 +25,8 @@
   align-items: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  width: 600px;
+  box-sizing: border-box;
 }
 
 .label-image {
@@ -256,82 +265,6 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive scaling for label UI */
-/* Below 1600px: 80% of original size */
-@media (max-width: 1600px) {
-  .floating-label {
-    transform: scale(0.8);
-    transform-origin: top left;
-  }
-}
-
-/* Below 1000px: 60% of original size */
-@media (max-width: 1000px) {
-  .floating-label {
-    transform: scale(0.6);
-    transform-origin: top left;
-  }
-}
-
-/* Below 600px: 40% of original size */
-@media (max-width: 600px) {
-  .floating-label {
-    transform: scale(0.4);
-    transform-origin: top left;
-  }
-}
-
-/* Below 300px: 20% of original size */
-@media (max-width: 300px) {
-  .floating-label {
-    transform: scale(0.2);
-    transform-origin: top left;
-  }
-}
-
-/* Mobile adjustments */
-@media (max-width: 768px) {
-  .floating-label {
-    max-width: calc(100vw - 40px);
-    top: 10px;
-    left: 10px;
-  }
-
-  .label-content {
-    padding: 20px;
-  }
-
-  .label-image {
-    margin-bottom: 12px;
-  }
-
-  .label-title {
-    font-size: 1.6rem;
-    margin-bottom: 10px;
-  }
-
-  .label-description {
-    font-size: 1.3rem;
-    margin-bottom: 16px;
-  }
-
-  .label-button {
-    padding: 16px 24px;
-    font-size: 1.3rem;
-    min-height: 48px; /* Larger touch target on mobile */
-  }
-
-  .toggle-button {
-    min-width: 48px;
-    min-height: 48px; /* Larger touch target on mobile */
-    padding: 16px 20px;
-  }
-
-  .toggle-button svg {
-    width: 56px;
-    height: 56px;
-  }
-}
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {

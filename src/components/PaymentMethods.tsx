@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { User } from 'firebase/auth';
 import './PaymentMethods.css';
-import { createCheckoutSession, getCurrentUser } from '../lib/firebase';
+import { createCheckoutSession, getCurrentUser, logout } from '../lib/firebase';
 
 interface PaymentMethodsProps {
   isOpen: boolean;
@@ -41,6 +41,15 @@ export default function PaymentMethods({
   const handleSignInForCard = () => {
     if (onRequestAuth) {
       onRequestAuth();
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error signing out:', error);
+      setError('Failed to sign out. Please try again.');
     }
   };
 
@@ -141,6 +150,15 @@ export default function PaymentMethods({
                 <span className="auth-status"> ✓ Signed in as {currentUser?.email}</span>
               )}
             </p>
+            {isAuthenticated && (
+              <button 
+                className="payment-sign-out-button"
+                onClick={handleSignOut}
+                type="button"
+              >
+                Sign Out
+              </button>
+            )}
             
             {!isAuthenticated ? (
               <button 

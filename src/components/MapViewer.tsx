@@ -110,21 +110,15 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     };
   }, [imageLoaded]);
 
-  // Reset map to center position
+  // Reset map to top-left position with full size
   const resetMap = useCallback(() => {
     if (!containerRef.current || !imageRef.current || !imageLoaded) {
       return;
     }
 
-    const container = containerRef.current;
-    const image = imageRef.current;
-    
-    // Reset to center with most zoomed out scale
-    const centerX = (container.clientWidth - image.naturalWidth * 0.2) / 2;
-    const centerY = (container.clientHeight - image.naturalHeight * 0.2) / 2;
-    
+    // Reset to top-left corner with most zoomed out scale
     setScale(0.2);
-    setPosition({ x: centerX, y: centerY });
+    setPosition({ x: 0, y: 0 });
   }, [imageLoaded]);
 
   // Handle mouse/touch start
@@ -189,26 +183,9 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
         };
         pinchStartRef.current = null;
       } else if (e.touches.length === 2) {
+        // Disable pinch zoom - prevent default behavior
         e.preventDefault();
-        const touch1 = e.touches[0];
-        const touch2 = e.touches[1];
-        const distance = Math.hypot(
-          touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
-        );
-        
-        const centerX = (touch1.clientX + touch2.clientX) / 2;
-        const centerY = (touch1.clientY + touch2.clientY) / 2;
-        
-        const rect = container.getBoundingClientRect();
-        pinchStartRef.current = {
-          distance,
-          scale: scaleRef.current,
-          center: {
-            x: centerX - rect.left,
-            y: centerY - rect.top,
-          },
-        };
+        // Don't set up pinch zoom state
         setIsDragging(false);
       }
     };
@@ -237,50 +214,10 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
             resetTimeoutRef.current = null;
           }
         }
-      } else if (e.touches.length === 2 && pinchStartRef.current) {
+      } else if (e.touches.length === 2) {
+        // Disable pinch zoom - prevent default behavior
         e.preventDefault();
-        const touch1 = e.touches[0];
-        const touch2 = e.touches[1];
-        const currentDistance = Math.hypot(
-          touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
-        );
-        
-        const distanceRatio = currentDistance / pinchStartRef.current.distance;
-        const scaleChange = (distanceRatio - 1) * 0.5 + 1;
-        
-        // Limit zoom more strictly on mobile (detect via touch)
-        const isMobile = window.innerWidth <= 768;
-        const minScale = isMobile ? 0.3 : 0.2;
-        const maxScale = isMobile ? 1.5 : 2;
-        const newScale = Math.max(minScale, Math.min(maxScale, pinchStartRef.current.scale * scaleChange));
-        
-        // Use center of viewport instead of pinch center
-        const centerX = container.clientWidth / 2;
-        const centerY = container.clientHeight / 2;
-        
-        const scaleRatio = newScale / pinchStartRef.current.scale;
-        const newX = centerX - (centerX - positionRef.current.x) * scaleRatio;
-        const newY = centerY - (centerY - positionRef.current.y) * scaleRatio;
-        
-        const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
-        setScale(newScale);
-        setPosition(clampedPosition);
-        
-        // Check if position is off screen and schedule reset
-        if (isPositionOffScreen(clampedPosition, newScale)) {
-          if (resetTimeoutRef.current) {
-            clearTimeout(resetTimeoutRef.current);
-          }
-          resetTimeoutRef.current = setTimeout(() => {
-            resetMap();
-          }, 500);
-        } else {
-          if (resetTimeoutRef.current) {
-            clearTimeout(resetTimeoutRef.current);
-            resetTimeoutRef.current = null;
-          }
-        }
+        // Don't process pinch zoom
       }
     };
 
@@ -349,27 +286,22 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     setPosition(clampedPosition);
   }, [scale, position, clampPosition]);
 
-  // Reset imageLoaded when URL changes
+  // Reset imageLoaded and position/scale when URL changes (Sun/Moon toggle)
   useEffect(() => {
     setImageLoaded(false);
+    // Reset position and scale when switching images
+    setScale(0.2);
+    setPosition({ x: 0, y: 0 });
   }, [mapImageUrl]);
 
-  // Center the image on initial load
+  // Position the image at top-left on initial load
   useEffect(() => {
     if (imageLoaded && containerRef.current && imageRef.current) {
-      const container = containerRef.current;
-      const image = imageRef.current;
-      
-      // Center the image initially (accounting for current scale)
-      const scaledWidth = image.naturalWidth * scale;
-      const scaledHeight = image.naturalHeight * scale;
-      const centerX = (container.clientWidth - scaledWidth) / 2;
-      const centerY = (container.clientHeight - scaledHeight) / 2;
-      
-      const clampedPosition = clampPosition({ x: centerX, y: centerY }, scale);
-      setPosition(clampedPosition);
+      // Reset to top-left corner with full size
+      setScale(0.2);
+      setPosition({ x: 0, y: 0 });
     }
-  }, [imageLoaded, scale, clampPosition]);
+  }, [imageLoaded]);
 
   // Handle image load
   const handleImageLoad = useCallback(() => {

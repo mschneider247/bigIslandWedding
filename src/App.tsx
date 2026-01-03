@@ -1,15 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import MapViewer from './components/MapViewer';
 import FloatingLabel from './components/FloatingLabel';
 import PaymentMethods from './components/PaymentMethods';
+import Auth from './components/Auth';
 import { config } from './config';
+import { onAuthChange, type User } from './lib/firebase';
 import './App.css';
 
 function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [isNightMode, setIsNightMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingButton, setLoadingButton] = useState<'sun' | 'moon' | null>(null);
+
+  // Listen to auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthChange((currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleSurveyClick = () => {
     if (config.surveyUrl) {
@@ -22,6 +34,15 @@ function App() {
 
   const handlePaymentClick = () => {
     setIsPaymentModalOpen(true);
+  };
+
+  const handleRequestAuth = () => {
+    setIsAuthModalOpen(true);
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+    // The user state will be updated automatically via onAuthChange
   };
 
   const handleToggleMode = (buttonType: 'sun' | 'moon') => {
@@ -59,6 +80,13 @@ function App() {
         onClose={() => setIsPaymentModalOpen(false)}
         venmoUrl={config.venmoUrl}
         checkMailingAddress={config.checkMailingAddress}
+        user={user}
+        onRequestAuth={handleRequestAuth}
+      />
+      <Auth
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
       />
       </div>
   );
