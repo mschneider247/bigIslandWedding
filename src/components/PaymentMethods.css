@@ -14,10 +14,10 @@
 }
 
 .payment-modal {
-  background: white;
+  background: #1a1a1a;
   border-radius: 16px;
   padding: 32px;
-  max-width: 500px;
+  max-width: 1000px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -31,10 +31,10 @@
   right: 16px;
   background: none;
   border: none;
-  font-size: 32px;
+  font-size: max(32px, 1.5em);
   line-height: 1;
   cursor: pointer;
-  color: #666;
+  color: #ffffff;
   width: 32px;
   height: 32px;
   display: flex;
@@ -42,18 +42,29 @@
   justify-content: center;
   border-radius: 8px;
   transition: all 0.2s ease;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-modal-close:hover {
-  background: #f0f0f0;
-  color: #333;
+  background: #2a2a2a;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-modal-title {
   margin: 0 0 24px 0;
-  font-size: 1.8rem;
+  font-size: max(2.2rem, 1.5em);
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
+}
+
+.payment-modal > p:first-of-type {
+  font-size: max(1.15rem, 1.5em);
+  line-height: 1.6;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
+  margin-bottom: 24px;
 }
 
 .truck-section {
@@ -76,9 +87,19 @@
 .truck-text {
   margin: 0;
   text-align: center;
-  color: #666;
-  font-size: 0.95rem;
+  color: #ffffff;
+  font-size: max(1.15rem, 1.5em);
   line-height: 1.5;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
+}
+
+.truck-section > p:not(.truck-text) {
+  margin: 0;
+  text-align: center;
+  color: #ffffff;
+  font-size: max(1.15rem, 1.5em);
+  line-height: 1.5;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-options {
@@ -88,10 +109,11 @@
 }
 
 .payment-option {
-  border: 2px solid #e0e0e0;
+  border: 2px solid #444;
   border-radius: 12px;
   padding: 20px;
   transition: all 0.2s ease;
+  background: rgba(42, 42, 42, 0.5);
 }
 
 .payment-option:hover {
@@ -108,27 +130,30 @@
 
 .payment-option-header h3 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: max(1.5rem, 1.5em);
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-badge {
   background: #646cff;
   color: white;
-  font-size: 0.75rem;
+  font-size: max(0.9rem, 1.5em);
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-option-description {
   margin: 0 0 16px 0;
-  color: #666;
-  font-size: 0.9rem;
+  color: #ffffff;
+  font-size: max(1.1rem, 1.5em);
   line-height: 1.5;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-option-button {
@@ -136,7 +161,7 @@
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: max(1.2rem, 1.5em);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -144,6 +169,8 @@
   display: inline-block;
   text-align: center;
   box-sizing: border-box;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-option-button.primary {
@@ -179,13 +206,14 @@
   background: #fff3cd;
   color: #856404;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: max(1.1rem, 1.5em);
   text-align: center;
   margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .mailing-address {
-  background: #f5f5f5;
+  background: #2a2a2a;
   padding: 12px;
   border-radius: 8px;
   margin-top: 8px;
@@ -193,10 +221,11 @@
 
 .mailing-address p {
   margin: 0;
-  color: #333;
-  font-size: 0.9rem;
+  color: #ffffff;
+  font-size: max(1.1rem, 1.5em);
   line-height: 1.6;
   white-space: pre-line;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-amount-input {
@@ -207,8 +236,9 @@
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #333;
-  font-size: 0.9rem;
+  color: #ffffff;
+  font-size: max(1.1rem, 1.5em);
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .amount-input-wrapper {
@@ -220,11 +250,12 @@
 .currency-symbol {
   position: absolute;
   left: 12px;
-  color: #666;
+  color: #ffffff;
   font-weight: 500;
-  font-size: 1.1rem;
+  font-size: max(1.3rem, 1.5em);
   pointer-events: none;
   z-index: 1;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-amount-input input {
@@ -232,9 +263,11 @@
   padding: 12px 16px 12px 28px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 1.1rem;
+  font-size: max(1.3rem, 1.5em);
   transition: all 0.2s ease;
   font-family: inherit;
+  color: #ffffff;
+  background: #2a2a2a;
 }
 
 .payment-amount-input input:focus {
@@ -253,17 +286,19 @@
   background: #fee;
   color: #c33;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: max(1.1rem, 1.5em);
   border: 1px solid #fcc;
   margin: 12px 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .auth-status {
   display: block;
   margin-top: 8px;
-  font-size: 0.85rem;
-  color: #28a745;
+  font-size: max(1.05rem, 1.5em);
+  color: #ffffff;
   font-weight: 500;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-sign-out-button {
@@ -271,19 +306,21 @@
   padding: 8px 16px;
   margin-top: 12px;
   background: transparent;
-  color: #666;
+  color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: max(1.05rem, 1.5em);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .payment-sign-out-button:hover {
-  background: #f5f5f5;
-  border-color: #ccc;
-  color: #333;
+  background: #2a2a2a;
+  border-color: #444;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 /* Mobile adjustments */
@@ -295,7 +332,7 @@
   }
 
   .payment-modal-title {
-    font-size: 1.5rem;
+    font-size: max(1.5rem, 1.5em);
     margin-bottom: 20px;
   }
 
@@ -304,7 +341,7 @@
   }
 
   .payment-option-header h3 {
-    font-size: 1.1rem;
+    font-size: max(1.1rem, 1.5em);
   }
 }
 
@@ -316,20 +353,23 @@
   }
 
   .payment-modal-close {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-modal-close:hover {
     background: #2a2a2a;
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-modal-title {
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-option {
-    border-color: #333;
+    border-color: #444;
   }
 
   .payment-option:hover {
@@ -338,14 +378,17 @@
 
   .payment-option-header h3 {
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-option-description {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .truck-text {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .mailing-address {
@@ -353,16 +396,18 @@
   }
 
   .mailing-address p {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-amount-input label {
-    color: #e0e0e0;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-amount-input input {
     background: #2a2a2a;
-    border-color: #333;
+    border-color: #444;
     color: #ffffff;
   }
 
@@ -375,7 +420,8 @@
   }
 
   .currency-symbol {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-error {
@@ -386,14 +432,16 @@
 
   .payment-sign-out-button {
     background: transparent;
-    color: #cccccc;
-    border-color: #333;
+    color: #ffffff;
+    border-color: #444;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .payment-sign-out-button:hover {
     background: #2a2a2a;
     border-color: #444;
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 }
 

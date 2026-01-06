@@ -78,6 +78,19 @@ In Stripe Checkout, use these test card numbers:
 
 ## 4. Common Issues & Solutions
 
+### Issue: Console Errors on Stripe Checkout Page
+**Symptoms:**
+- CSP (Content Security Policy) violations in console
+- "Cannot find module './en'" errors
+- Errors appear when redirected to Stripe Checkout
+
+**Solution:**
+- These errors occur on Stripe's hosted checkout page (not our app)
+- They are Stripe internal issues and typically do not affect functionality
+- Checkout should work normally despite these console errors
+- If checkout fails, check for other error messages in the console
+- These errors are cosmetic and do not prevent payments from processing
+
 ### Issue: "Payment function not found"
 **Solution:**
 - Check Firebase Functions are deployed

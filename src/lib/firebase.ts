@@ -148,11 +148,7 @@ export const createCheckoutSession = async (
     ],
   };
 
-  console.log('Creating Firestore document for checkout session:', sessionData);
-  console.log('Customer UID:', user.uid);
   const docRef = await addDoc(checkoutSessionsRef, sessionData);
-  console.log('Document created with ID:', docRef.id);
-  console.log('Document path:', docRef.path);
 
   // Return a promise that resolves when the extension adds the URL to the document
   return new Promise((resolve, reject) => {
@@ -163,13 +159,6 @@ export const createCheckoutSession = async (
       if (hasResolved) return;
       
       const data = snapshot.data();
-      console.log('Document snapshot update:', { 
-        id: snapshot.id, 
-        exists: snapshot.exists(),
-        data: data,
-        hasUrl: !!data?.url,
-        hasError: !!data?.error
-      });
       
       if (data?.error) {
         hasResolved = true;
@@ -185,17 +174,10 @@ export const createCheckoutSession = async (
       if (data?.url) {
         hasResolved = true;
         unsubscribe();
-        console.log('Checkout session URL received:', data.url);
         resolve({ url: data.url });
         return;
       }
       
-      // Document created but URL not yet available - extension is still processing
-      if (!data || Object.keys(data).length === 0) {
-        console.log('Document exists but no data yet. Waiting for extension to process...');
-      } else {
-        console.log('Waiting for checkout session URL. Current document state:', data);
-      }
     }, (error) => {
       if (hasResolved) return;
       hasResolved = true;

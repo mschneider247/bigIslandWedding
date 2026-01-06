@@ -110,12 +110,16 @@ export default function PaymentMethods({
         <button className="payment-modal-close" onClick={onClose}>
           ×
         </button>
-        <p>Your presence is considered the greatest gift of all, however, if you would like to honor us with a gift, we would be grateful for any contribution to our adventure setup.</p>
-        
+        <p>
+        Your presence is considered the greatest gift of all, however, if you would like to honor us 
+        with a gift, we would be grateful for any contribution to our adventure setup. It's our 
+        everything vehicle, from groceries to camping. We dream of paying it off to explore farther 
+        west, especially to see the Redwoods and Sequoias.
+        </p>
+        <p></p>
         <div className="truck-section">
           <img src="/truck.jpg" alt="Truck" className="truck-image" />
           <p className="truck-text">- "The Taco MAO" (Mobile Adventure Unit).</p>
-          <p>It's our everything vehicle, from groceries to camping. We dream of paying it off to explore farther west, especially to see the Redwoods and Sequoias.</p>
         </div>
         
         <h2 className="payment-modal-title">Adventure Options</h2>
@@ -143,7 +147,31 @@ export default function PaymentMethods({
             )}
           </div>
 
-          {/* Credit Card Payment Option - Second */}
+          {/* Personal Check Option - Second */}
+          <div className="payment-option">
+            <div className="payment-option-header">
+              <h3>Personal Check</h3>
+            </div>
+            <p className="payment-option-description">
+              We also accept personal checks
+            </p>
+            {checkMailingAddress ? (
+              <>
+                <p className="payment-option-description" style={{ marginTop: '8px' }}>
+                  Send a check to the following address:
+                </p>
+                <div className="mailing-address">
+                  <p style={{ whiteSpace: 'pre-line' }}>{checkMailingAddress.replace(/\\n/g, '\n')}</p>
+                </div>
+              </>
+            ) : (
+              <p className="payment-option-description" style={{ marginTop: '8px' }}>
+                Please contact us for mailing address
+              </p>
+            )}
+          </div>
+
+          {/* Credit Card Payment Option - Third */}
           <div className="payment-option">
             <div className="payment-option-header">
               <h3>Credit Card Payment</h3>
@@ -210,30 +238,6 @@ export default function PaymentMethods({
                   {processing ? 'Processing...' : 'Pay with Card'}
                 </button>
               </>
-            )}
-          </div>
-
-          {/* Check Option - Third */}
-          <div className="payment-option">
-            <div className="payment-option-header">
-              <h3>Personal Check</h3>
-            </div>
-            <p className="payment-option-description">
-              We also accept personal checks
-            </p>
-            {checkMailingAddress ? (
-              <>
-                <p className="payment-option-description" style={{ marginTop: '8px' }}>
-                  Send a check to the following address:
-                </p>
-                <div className="mailing-address">
-                  <p style={{ whiteSpace: 'pre-line' }}>{checkMailingAddress.replace(/\\n/g, '\n')}</p>
-                </div>
-              </>
-            ) : (
-              <p className="payment-option-description" style={{ marginTop: '8px' }}>
-                Please contact us for mailing address
-              </p>
             )}
           </div>
         </div>

@@ -54,7 +54,7 @@
   position: fixed;
   top: 16px;
   right: 16px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
   padding: 10px 16px;
   border-radius: 8px;
@@ -63,24 +63,27 @@
   align-items: center;
   gap: 12px;
   z-index: 1000;
-  font-size: 0.9rem;
-  color: #333;
+  font-size: max(0.9rem, 1.5em);
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .logout-button {
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+  background: #2a2a2a;
+  border: 1px solid #444;
   padding: 6px 12px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: max(0.85rem, 1.5em);
   transition: all 0.2s ease;
-  color: #666;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .logout-button:hover {
-  background: #e8e8e8;
-  color: #333;
+  background: #333;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 @media (max-width: 768px) {
@@ -88,7 +91,7 @@
     top: 8px;
     right: 8px;
     left: 8px;
-    font-size: 0.85rem;
+    font-size: max(0.85rem, 1.5em);
     padding: 8px 12px;
   }
 
@@ -104,16 +107,19 @@
   .user-info-banner {
     background: rgba(26, 26, 26, 0.95);
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .logout-button {
     background: #2a2a2a;
-    border-color: #333;
-    color: #cccccc;
+    border-color: #444;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .logout-button:hover {
     background: #333;
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 }

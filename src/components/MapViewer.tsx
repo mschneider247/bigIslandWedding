@@ -110,15 +110,37 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     };
   }, [imageLoaded]);
 
-  // Reset map to top-left position with full size
+  // Center image in viewport
+  const centerImage = useCallback(() => {
+    if (!containerRef.current || !imageRef.current || !imageLoaded) {
+      return;
+    }
+
+    const container = containerRef.current;
+    const image = imageRef.current;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    const currentScale = scaleRef.current;
+    const scaledWidth = image.naturalWidth * currentScale;
+    const scaledHeight = image.naturalHeight * currentScale;
+
+    // Calculate position to center the image
+    // Center of image should be at center of viewport
+    const centerX = (containerWidth - scaledWidth) / 2;
+    const centerY = (containerHeight - scaledHeight) / 2;
+
+    setPosition({ x: centerX, y: centerY });
+  }, [imageLoaded]);
+
+  // Reset map to centered position with full size
   const resetMap = useCallback(() => {
     if (!containerRef.current || !imageRef.current || !imageLoaded) {
       return;
     }
 
-    // Reset to top-left corner with most zoomed out scale
+    // Reset to most zoomed out scale and center
     setScale(0.2);
-    setPosition({ x: 0, y: 0 });
+    // Center will be calculated in the effect that watches scale
   }, [imageLoaded]);
 
   // Handle mouse/touch start
@@ -288,20 +310,25 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
 
   // Reset imageLoaded and position/scale when URL changes (Sun/Moon toggle)
   useEffect(() => {
-    setImageLoaded(false);
-    // Reset position and scale when switching images
-    setScale(0.2);
-    setPosition({ x: 0, y: 0 });
+    // Reset state when image URL changes
+    // Using a callback to batch state updates and avoid cascading renders
+    const resetState = () => {
+      setImageLoaded(false);
+      setScale(0.2);
+    };
+    // Use requestAnimationFrame to defer state updates
+    requestAnimationFrame(resetState);
   }, [mapImageUrl]);
 
-  // Position the image at top-left on initial load
+  // Center the image when it loads or when scale changes
   useEffect(() => {
     if (imageLoaded && containerRef.current && imageRef.current) {
-      // Reset to top-left corner with full size
-      setScale(0.2);
-      setPosition({ x: 0, y: 0 });
+      // Small delay to ensure container dimensions are calculated
+      setTimeout(() => {
+        centerImage();
+      }, 0);
     }
-  }, [imageLoaded]);
+  }, [imageLoaded, scale, centerImage]);
 
   // Handle image load
   const handleImageLoad = useCallback(() => {

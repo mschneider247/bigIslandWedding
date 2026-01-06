@@ -3,9 +3,9 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: 24px 0;
+  margin: 2% 0;
   padding: 16px 24px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -18,25 +18,28 @@
 }
 
 .countdown-value {
-  font-size: 2rem;
+  font-size: max(2rem, 1.5em);
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffffff;
   line-height: 1;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .countdown-label {
-  font-size: 0.9rem;
+  font-size: max(0.9rem, 1.5em);
   font-weight: 500;
-  color: #666;
+  color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .countdown-separator {
-  font-size: 2rem;
+  font-size: max(2rem, 1.5em);
   font-weight: 700;
-  color: #1a1a1a;
+  color: #ffffff;
   margin: 0 -4px;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 /* Responsive adjustments */
@@ -47,15 +50,15 @@
   }
 
   .countdown-value {
-    font-size: 1.8rem;
+    font-size: max(1.8rem, 1.5em);
   }
 
   .countdown-label {
-    font-size: 0.85rem;
+    font-size: max(0.85rem, 1.5em);
   }
 
   .countdown-separator {
-    font-size: 1.8rem;
+    font-size: max(1.8rem, 1.5em);
   }
 }
 
@@ -66,15 +69,15 @@
   }
 
   .countdown-value {
-    font-size: 1.6rem;
+    font-size: max(1.6rem, 1.5em);
   }
 
   .countdown-label {
-    font-size: 0.8rem;
+    font-size: max(0.8rem, 1.5em);
   }
 
   .countdown-separator {
-    font-size: 1.6rem;
+    font-size: max(1.6rem, 1.5em);
   }
 }
 
@@ -82,19 +85,19 @@
   .countdown-timer {
     padding: 12px 16px;
     gap: 8px;
-    margin: 20px 0;
+    margin: 2% 0;
   }
 
   .countdown-value {
-    font-size: 1.5rem;
+    font-size: max(1.5rem, 1.5em);
   }
 
   .countdown-label {
-    font-size: 0.75rem;
+    font-size: max(0.75rem, 1.5em);
   }
 
   .countdown-separator {
-    font-size: 1.5rem;
+    font-size: max(1.5rem, 1.5em);
   }
 }
 
@@ -105,19 +108,19 @@
   }
 
   .countdown-value {
-    font-size: 1.3rem;
+    font-size: max(1.3rem, 1.5em);
   }
 
   .countdown-label {
-    font-size: 0.7rem;
+    font-size: max(0.7rem, 1.5em);
   }
 
   .countdown-separator {
-    font-size: 1.3rem;
+    font-size: max(1.3rem, 1.5em);
   }
 }
 
-/* Dark mode support */
+/* Dark mode support - text is already white with drop shadow */
 @media (prefers-color-scheme: dark) {
   .countdown-timer {
     background: rgba(0, 0, 0, 0.5);
@@ -125,14 +128,17 @@
 
   .countdown-value {
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .countdown-label {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .countdown-separator {
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 }
 

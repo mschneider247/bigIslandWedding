@@ -14,7 +14,7 @@
 }
 
 .auth-modal {
-  background: white;
+  background: #1a1a1a;
   border-radius: 16px;
   padding: 32px;
   max-width: 480px;
@@ -31,10 +31,10 @@
   right: 16px;
   background: none;
   border: none;
-  font-size: 32px;
+  font-size: max(32px, 1.5em);
   line-height: 1;
   cursor: pointer;
-  color: #666;
+  color: #ffffff;
   width: 32px;
   height: 32px;
   display: flex;
@@ -42,26 +42,30 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-modal-close:hover {
-  background: #f0f0f0;
-  color: #333;
+  background: #2a2a2a;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-modal-title {
   margin: 0 0 8px 0;
-  font-size: 1.8rem;
+  font-size: max(1.8rem, 1.5em);
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
   text-align: center;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-modal-subtitle {
   margin: 0 0 24px 0;
-  color: #666;
+  color: #ffffff;
   text-align: center;
-  font-size: 0.95rem;
+  font-size: max(0.95rem, 1.5em);
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-form {
@@ -78,17 +82,20 @@
 
 .auth-form-group label {
   font-weight: 500;
-  color: #333;
-  font-size: 0.9rem;
+  color: #ffffff;
+  font-size: max(0.9rem, 1.5em);
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-form-group input {
   padding: 12px 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #444;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: max(1rem, 1.5em);
   transition: all 0.2s ease;
   font-family: inherit;
+  color: #ffffff;
+  background: #2a2a2a;
 }
 
 .auth-form-group input:focus {
@@ -107,8 +114,9 @@
   background: #fee;
   color: #c33;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: max(0.9rem, 1.5em);
   border: 1px solid #fcc;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .auth-submit-button {
@@ -118,11 +126,12 @@
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: max(1rem, 1.5em);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 8px;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-submit-button:hover:not(:disabled) {
@@ -148,12 +157,13 @@
 .auth-toggle-mode {
   background: none;
   border: none;
-  color: #646cff;
+  color: #ffffff;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: max(0.9rem, 1.5em);
   text-decoration: underline;
   padding: 4px;
   transition: color 0.2s ease;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-toggle-mode:hover:not(:disabled) {
@@ -168,12 +178,13 @@
 .auth-privacy-link {
   background: none;
   border: none;
-  color: #666;
+  color: #ffffff;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: max(0.85rem, 1.5em);
   text-decoration: underline;
   padding: 4px;
   transition: color 0.2s ease;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-privacy-link:hover {
@@ -191,47 +202,52 @@
 
 .privacy-section h3 {
   margin: 0 0 12px 0;
-  font-size: 1.2rem;
+  font-size: max(1.2rem, 1.5em);
   font-weight: 600;
-  color: #1a1a1a;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .privacy-section p {
   margin: 0 0 12px 0;
-  color: #555;
+  color: #ffffff;
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: max(0.95rem, 1.5em);
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .privacy-section ul {
   margin: 12px 0;
   padding-left: 24px;
-  color: #555;
+  color: #ffffff;
   line-height: 1.8;
 }
 
 .privacy-section ul li {
   margin-bottom: 8px;
-  font-size: 0.9rem;
+  font-size: max(0.9rem, 1.5em);
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .privacy-section ul li strong {
-  color: #333;
+  color: #ffffff;
   font-weight: 600;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-back-button {
   width: 100%;
   padding: 12px 24px;
-  background: #f5f5f5;
-  color: #333;
-  border: 2px solid #e0e0e0;
+  background: #2a2a2a;
+  color: #ffffff;
+  border: 2px solid #444;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: max(1rem, 1.5em);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 16px;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .auth-back-button:hover {
@@ -248,15 +264,15 @@
   }
 
   .auth-modal-title {
-    font-size: 1.5rem;
+    font-size: max(1.5rem, 1.5em);
   }
 
   .privacy-section h3 {
-    font-size: 1.1rem;
+    font-size: max(1.1rem, 1.5em);
   }
 }
 
-/* Dark mode support */
+/* Dark mode support - text is already white with drop shadow */
 @media (prefers-color-scheme: dark) {
   .auth-modal {
     background: #1a1a1a;
@@ -264,29 +280,34 @@
   }
 
   .auth-modal-close {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-modal-close:hover {
     background: #2a2a2a;
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-modal-title {
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-modal-subtitle {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-form-group label {
-    color: #e0e0e0;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-form-group input {
     background: #2a2a2a;
-    border-color: #333;
+    border-color: #444;
     color: #ffffff;
   }
 
@@ -302,30 +323,36 @@
     background: #3a2222;
     color: #ff9999;
     border-color: #4a3333;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
   }
 
   .privacy-section h3 {
     color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .privacy-section p,
   .privacy-section ul {
-    color: #cccccc;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .privacy-section ul li strong {
-    color: #e0e0e0;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-back-button {
     background: #2a2a2a;
     color: #ffffff;
-    border-color: #333;
+    border-color: #444;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .auth-back-button:hover {
     background: #333;
     border-color: #444;
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 }
 

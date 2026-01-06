@@ -1,24 +1,21 @@
 .floating-label {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 2%;
+  left: 2%;
   z-index: 1000;
   pointer-events: none;
   max-width: 600px;
   transform-origin: top left;
   -webkit-tap-highlight-color: transparent;
-  /* Scale the entire container proportionally based on viewport height */
-  /* Base reference height: 800px - adjust if your content's natural height differs */
-  /* This scales the entire container (text, buttons, padding, margins) proportionally */
-  /* Minimum scale floor: stops shrinking when viewport height is less than 600px */
-  /* At 600px viewport: 50vh = 300px, so min scale = 300px / 800px = 0.375 */
-  transform: scale(max(calc(50vh / 800px), 0.375));
+  --container-scale: max(calc(40vh / 700px), 0.65);
+  transform: scale(var(--container-scale));
+  --text-scale: max(1, calc(0.75 / var(--container-scale)));
 }
 
 .label-content {
   background: transparent;
   border-radius: 24px;
-  padding: 24px;
+  padding: 4%;
   pointer-events: auto;
   display: flex;
   flex-direction: column;
@@ -27,20 +24,22 @@
   -webkit-tap-highlight-color: transparent;
   width: 600px;
   box-sizing: border-box;
+  gap: 2%;
 }
 
 .label-image {
   width: 100%;
   max-width: 100%;
   height: auto;
-  margin-bottom: 16px;
   display: block;
+  margin: 0;
+  padding: 0;
+  transform: scale(var((--container-scale + 0.1)));
 }
 
 .day-night-toggle {
   display: flex;
   gap: 16px;
-  margin-bottom: 16px;
   align-items: center;
   justify-content: center;
   background: transparent;
@@ -58,7 +57,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
   position: relative;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -190,38 +188,38 @@
 }
 
 .label-title {
-  margin: 0 0 12px 0;
-  font-size: 1.8rem;
+  margin: 0;
+  font-size: max(1.8rem, 1.5em);
   font-weight: 600;
-  color: #1a1a1a;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   text-align: center;
 }
 
 .label-description {
-  margin: 0 0 18px 0;
-  font-size: 1.4rem;
-  color: #333;
+  margin: 0;
+  font-size: max(1.4rem, 1.5em);
+  color: #ffffff;
   line-height: 1.4;
-  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   text-align: center;
 }
 
 .label-buttons {
   display: flex;
-  gap: 16px;
+  gap: 2%;
   flex-direction: column;
   width: 100%;
 }
 
 .label-button {
   padding: 16px 24px;
+  margin: 1%;
   border: none;
   border-radius: 12px;
-  font-size: 1.4rem;
+  font-size: max(1.4rem, 1.5em);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-align: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -229,6 +227,8 @@
   -webkit-touch-callout: none;
   user-select: none;
   -webkit-user-select: none;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
 .survey-button {
@@ -266,16 +266,16 @@
 }
 
 
-/* Dark mode support */
+/* Dark mode support - text is already white with drop shadow */
 @media (prefers-color-scheme: dark) {
   .label-title {
     color: #ffffff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 
   .label-description {
     color: #ffffff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
   }
 }
 
