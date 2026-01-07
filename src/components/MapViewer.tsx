@@ -243,10 +243,22 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
         };
         pinchStartRef.current = null;
       } else if (e.touches.length === 2) {
-        // Disable pinch zoom - prevent default behavior
         e.preventDefault();
-        // Don't set up pinch zoom state
         setIsDragging(false);
+        // Set up pinch zoom state
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const distance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        const centerX = (touch1.clientX + touch2.clientX) / 2;
+        const centerY = (touch1.clientY + touch2.clientY) / 2;
+        pinchStartRef.current = {
+          distance,
+          scale: scaleRef.current,
+          center: { x: centerX, y: centerY },
+        };
       }
     };
 
@@ -274,10 +286,33 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
             resetTimeoutRef.current = null;
           }
         }
-      } else if (e.touches.length === 2) {
-        // Disable pinch zoom - prevent default behavior
+      } else if (e.touches.length === 2 && pinchStartRef.current) {
         e.preventDefault();
-        // Don't process pinch zoom
+        // Process pinch zoom at 10% sensitivity
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        
+        // Calculate scale change (10% sensitivity)
+        const distanceRatio = currentDistance / pinchStartRef.current.distance;
+        const scaleChange = (distanceRatio - 1) * 0.1 + 1; // Only apply 10% of the change
+        const newScale = Math.max(0.2, Math.min(2, pinchStartRef.current.scale * scaleChange));
+        
+        // Calculate center point in container coordinates
+        const centerX = (touch1.clientX + touch2.clientX) / 2;
+        const centerY = (touch1.clientY + touch2.clientY) / 2;
+        
+        // Zoom towards the pinch center
+        const scaleChangeRatio = newScale / scaleRef.current;
+        const newX = centerX - (centerX - positionRef.current.x) * scaleChangeRatio;
+        const newY = centerY - (centerY - positionRef.current.y) * scaleChangeRatio;
+        
+        const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
+        setScale(newScale);
+        setPosition(clampedPosition);
       }
     };
 

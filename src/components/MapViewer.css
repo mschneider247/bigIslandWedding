@@ -3,7 +3,7 @@
   height: 100vh;
   overflow: hidden;
   position: relative;
-  touch-action: none;
+  touch-action: pan-x pan-y pinch-zoom;
   background-color: transparent;
 }
 
@@ -61,7 +61,7 @@
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .map-viewer {
-    touch-action: none; /* Disable native pinch-zoom to prevent conflicts */
+    touch-action: pan-x pan-y pinch-zoom; /* Allow pinch-zoom with custom sensitivity */
   }
 }
 

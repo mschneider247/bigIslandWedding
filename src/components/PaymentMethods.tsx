@@ -119,7 +119,7 @@ export default function PaymentMethods({
         <p></p>
         <div className="truck-section">
           <img src="/truck.jpg" alt="Truck" className="truck-image" />
-          <p className="truck-text">- "The Taco MAO" (Mobile Adventure Unit).</p>
+          <p className="truck-text">- "The Taco MAU" (Mobile Adventure Unit).</p>
         </div>
         
         <h2 className="payment-modal-title">Adventure Options</h2>
@@ -152,22 +152,15 @@ export default function PaymentMethods({
             <div className="payment-option-header">
               <h3>Personal Check</h3>
             </div>
-            <p className="payment-option-description">
-              We also accept personal checks
-            </p>
-            {checkMailingAddress ? (
+            {checkMailingAddress && (
               <>
                 <p className="payment-option-description" style={{ marginTop: '8px' }}>
-                  Send a check to the following address:
+                  Send to the following address:
                 </p>
                 <div className="mailing-address">
                   <p style={{ whiteSpace: 'pre-line' }}>{checkMailingAddress.replace(/\\n/g, '\n')}</p>
                 </div>
               </>
-            ) : (
-              <p className="payment-option-description" style={{ marginTop: '8px' }}>
-                Please contact us for mailing address
-              </p>
             )}
           </div>
 
