@@ -44,8 +44,20 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     const image = imageRef.current;
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-    const scaledWidth = image.naturalWidth * currentScale;
-    const scaledHeight = image.naturalHeight * currentScale;
+    
+    // Get actual rendered dimensions - account for CSS media query scaling
+    const imageRect = image.getBoundingClientRect();
+    let actualWidth = imageRect.width;
+    let actualHeight = imageRect.height;
+    
+    // Fallback to natural dimensions if getBoundingClientRect returns invalid values
+    if (actualWidth <= 0 || actualHeight <= 0 || !isFinite(actualWidth) || !isFinite(actualHeight)) {
+      actualWidth = image.naturalWidth;
+      actualHeight = image.naturalHeight;
+    }
+    
+    const scaledWidth = actualWidth * currentScale;
+    const scaledHeight = actualHeight * currentScale;
 
     // Calculate bounds
     const minX = containerWidth - scaledWidth;
@@ -75,8 +87,23 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     const image = imageRef.current;
     const containerWidth = container.clientWidth;
     const containerHeight = container.clientHeight;
-    const scaledWidth = image.naturalWidth * currentScale;
-    const scaledHeight = image.naturalHeight * currentScale;
+    
+    // Get actual rendered dimensions - account for CSS media query scaling
+    // The CSS transform on .map-image scales it, so we need the actual displayed size
+    const imageRect = image.getBoundingClientRect();
+    let actualWidth = imageRect.width;
+    let actualHeight = imageRect.height;
+    
+    // Fallback to natural dimensions if getBoundingClientRect returns invalid values
+    // (can happen during initial render or on some mobile browsers)
+    if (actualWidth <= 0 || actualHeight <= 0 || !isFinite(actualWidth) || !isFinite(actualHeight)) {
+      actualWidth = image.naturalWidth;
+      actualHeight = image.naturalHeight;
+    }
+    
+    // Apply the JavaScript scale on top of the CSS-scaled dimensions
+    const scaledWidth = actualWidth * currentScale;
+    const scaledHeight = actualHeight * currentScale;
 
     // Calculate bounds: image should not go beyond container edges
     // If scaled image is larger than container, clamp to prevent edges from going past container
@@ -110,37 +137,48 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     };
   }, [imageLoaded]);
 
-  // Center image in viewport
-  const centerImage = useCallback(() => {
+  // Align top-left corner of image with top-left corner of viewport
+  const alignTopLeft = useCallback(() => {
     if (!containerRef.current || !imageRef.current || !imageLoaded) {
       return;
     }
 
-    const container = containerRef.current;
-    const image = imageRef.current;
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
-    const currentScale = scaleRef.current;
-    const scaledWidth = image.naturalWidth * currentScale;
-    const scaledHeight = image.naturalHeight * currentScale;
+    // Position image at (0, 0) to align top-left corners
+    // Clamp to ensure it doesn't go outside bounds if image is smaller than container
+    const clampedPosition = clampPosition({ x: 0, y: 0 }, scaleRef.current);
+    setPosition(clampedPosition);
+  }, [imageLoaded, clampPosition]);
 
-    // Calculate position to center the image
-    // Center of image should be at center of viewport
-    const centerX = (containerWidth - scaledWidth) / 2;
-    const centerY = (containerHeight - scaledHeight) / 2;
+  // Handle window resize to re-align on mobile orientation changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (imageLoaded && containerRef.current && imageRef.current) {
+        // Small delay to ensure container dimensions are recalculated after resize
+        setTimeout(() => {
+          alignTopLeft();
+        }, 100);
+      }
+    };
 
-    setPosition({ x: centerX, y: centerY });
-  }, [imageLoaded]);
+    window.addEventListener('resize', handleResize);
+    // Also listen for orientation changes on mobile
+    window.addEventListener('orientationchange', handleResize);
 
-  // Reset map to centered position with full size
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, [imageLoaded, alignTopLeft]);
+
+  // Reset map to top-left aligned position with full size
   const resetMap = useCallback(() => {
     if (!containerRef.current || !imageRef.current || !imageLoaded) {
       return;
     }
 
-    // Reset to most zoomed out scale and center
+    // Reset to most zoomed out scale and align top-left
     setScale(0.2);
-    // Center will be calculated in the effect that watches scale
+    // Top-left alignment will be calculated in the effect that watches scale
   }, [imageLoaded]);
 
   // Handle mouse/touch start
@@ -320,15 +358,15 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     requestAnimationFrame(resetState);
   }, [mapImageUrl]);
 
-  // Center the image when it loads or when scale changes
+  // Align top-left corner when image loads or when scale changes
   useEffect(() => {
     if (imageLoaded && containerRef.current && imageRef.current) {
       // Small delay to ensure container dimensions are calculated
       setTimeout(() => {
-        centerImage();
+        alignTopLeft();
       }, 0);
     }
-  }, [imageLoaded, scale, centerImage]);
+  }, [imageLoaded, scale, alignTopLeft]);
 
   // Handle image load
   const handleImageLoad = useCallback(() => {
