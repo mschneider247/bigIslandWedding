@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './MapViewer.css';
 
 interface MapViewerProps {
@@ -9,226 +9,37 @@ interface MapViewerProps {
 
 export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapViewerProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(0.2); // Start at most zoomed out
+  const [scale, setScale] = useState(0.2);
   const [isDragging, setIsDragging] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  
   const containerRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
-  const positionRef = useRef(position);
-  const scaleRef = useRef(scale);
-  const isDraggingRef = useRef(isDragging);
-  const pinchStartRef = useRef<{ distance: number; scale: number; center: { x: number; y: number } } | null>(null);
-  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pinchStartRef = useRef<{ distance: number; scale: number } | null>(null);
 
-  // Keep refs in sync
-  useEffect(() => {
-    positionRef.current = position;
-  }, [position]);
-
-  useEffect(() => {
-    scaleRef.current = scale;
-  }, [scale]);
-
-  useEffect(() => {
-    isDraggingRef.current = isDragging;
-  }, [isDragging]);
-
-  // Check if position is too far off screen (for reset)
-  const isPositionOffScreen = useCallback((pos: { x: number; y: number }, currentScale: number) => {
-    if (!containerRef.current || !imageRef.current || !imageLoaded) {
-      return false;
-    }
-
-    const container = containerRef.current;
-    const image = imageRef.current;
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
-    
-    // Get actual rendered dimensions - account for CSS media query scaling
-    const imageRect = image.getBoundingClientRect();
-    let actualWidth = imageRect.width;
-    let actualHeight = imageRect.height;
-    
-    // Fallback to natural dimensions if getBoundingClientRect returns invalid values
-    if (actualWidth <= 0 || actualHeight <= 0 || !isFinite(actualWidth) || !isFinite(actualHeight)) {
-      actualWidth = image.naturalWidth;
-      actualHeight = image.naturalHeight;
-    }
-    
-    const scaledWidth = actualWidth * currentScale;
-    const scaledHeight = actualHeight * currentScale;
-
-    // Calculate bounds
-    const minX = containerWidth - scaledWidth;
-    const maxX = 0;
-    const minY = containerHeight - scaledHeight;
-    const maxY = 0;
-
-    // Check if position is way outside bounds (more than 50% of container size)
-    const thresholdX = containerWidth * 0.5;
-    const thresholdY = containerHeight * 0.5;
-    
-    return (
-      pos.x > maxX + thresholdX ||
-      pos.x < minX - thresholdX ||
-      pos.y > maxY + thresholdY ||
-      pos.y < minY - thresholdY
-    );
-  }, [imageLoaded]);
-
-  // Calculate bounds and clamp position
-  const clampPosition = useCallback((pos: { x: number; y: number }, currentScale: number) => {
-    if (!containerRef.current || !imageRef.current || !imageLoaded) {
-      return pos;
-    }
-
-    const container = containerRef.current;
-    const image = imageRef.current;
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
-    
-    // Get actual rendered dimensions - account for CSS media query scaling
-    // The CSS transform on .map-image scales it, so we need the actual displayed size
-    const imageRect = image.getBoundingClientRect();
-    let actualWidth = imageRect.width;
-    let actualHeight = imageRect.height;
-    
-    // Fallback to natural dimensions if getBoundingClientRect returns invalid values
-    // (can happen during initial render or on some mobile browsers)
-    if (actualWidth <= 0 || actualHeight <= 0 || !isFinite(actualWidth) || !isFinite(actualHeight)) {
-      actualWidth = image.naturalWidth;
-      actualHeight = image.naturalHeight;
-    }
-    
-    // Apply the JavaScript scale on top of the CSS-scaled dimensions
-    const scaledWidth = actualWidth * currentScale;
-    const scaledHeight = actualHeight * currentScale;
-
-    // Calculate bounds: image should not go beyond container edges
-    // If scaled image is larger than container, clamp to prevent edges from going past container
-    // If scaled image is smaller than container, allow movement but keep it within container bounds
-    let minX: number, maxX: number, minY: number, maxY: number;
-    
-    if (scaledWidth > containerWidth) {
-      // Image is larger: prevent left edge from going past right, and right edge from going past left
-      minX = containerWidth - scaledWidth; // Most right position (left edge at right side)
-      maxX = 0; // Most left position (left edge at left side)
-    } else {
-      // Image is smaller: allow it to move but keep it within container
-      minX = 0; // Can't move left past container edge
-      maxX = containerWidth - scaledWidth; // Can't move right past container edge
-    }
-    
-    if (scaledHeight > containerHeight) {
-      // Image is larger: prevent top edge from going past bottom, and bottom edge from going past top
-      minY = containerHeight - scaledHeight; // Most bottom position (top edge at bottom)
-      maxY = 0; // Most top position (top edge at top)
-    } else {
-      // Image is smaller: allow it to move but keep it within container
-      minY = 0; // Can't move up past container edge
-      maxY = containerHeight - scaledHeight; // Can't move down past container edge
-    }
-
-    // Clamp position within bounds - ensure it never goes outside
-    return {
-      x: Math.max(minX, Math.min(maxX, pos.x)),
-      y: Math.max(minY, Math.min(maxY, pos.y)),
-    };
-  }, [imageLoaded]);
-
-  // Align top-left corner of image with top-left corner of viewport
-  const alignTopLeft = useCallback(() => {
-    if (!containerRef.current || !imageRef.current || !imageLoaded) {
-      return;
-    }
-
-    // Position image at (0, 0) to align top-left corners
-    // Clamp to ensure it doesn't go outside bounds if image is smaller than container
-    const clampedPosition = clampPosition({ x: 0, y: 0 }, scaleRef.current);
-    setPosition(clampedPosition);
-  }, [imageLoaded, clampPosition]);
-
-  // Handle window resize to re-align on mobile orientation changes
-  useEffect(() => {
-    const handleResize = () => {
-      if (imageLoaded && containerRef.current && imageRef.current) {
-        // Small delay to ensure container dimensions are recalculated after resize
-        setTimeout(() => {
-          alignTopLeft();
-        }, 100);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    // Also listen for orientation changes on mobile
-    window.addEventListener('orientationchange', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleResize);
-    };
-  }, [imageLoaded, alignTopLeft]);
-
-  // Reset map to top-left aligned position with full size
-  const resetMap = useCallback(() => {
-    if (!containerRef.current || !imageRef.current || !imageLoaded) {
-      return;
-    }
-
-    // Reset to most zoomed out scale and align top-left
-    setScale(0.2);
-    // Top-left alignment will be calculated in the effect that watches scale
-  }, [imageLoaded]);
-
-  // Handle mouse/touch start
-  const handleStart = useCallback((clientX: number, clientY: number) => {
+  // Mouse drag
+  const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
-    dragStartRef.current = {
-      x: clientX - positionRef.current.x,
-      y: clientY - positionRef.current.y,
-    };
-  }, []);
+    dragStartRef.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+  };
 
-  // Handle mouse/touch move
-  const handleMove = useCallback((clientX: number, clientY: number) => {
-    const newPosition = {
-      x: clientX - dragStartRef.current.x,
-      y: clientY - dragStartRef.current.y,
-    };
-    const clampedPosition = clampPosition(newPosition, scaleRef.current);
-    setPosition(clampedPosition);
-  }, [clampPosition]);
-
-  // Handle mouse/touch end
-  const handleEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  // Mouse events with global listeners for better performance
   useEffect(() => {
-    if (isDragging) {
-      const handleMouseMove = (e: MouseEvent) => {
-        e.preventDefault();
-        handleMove(e.clientX, e.clientY);
-      };
+    if (!isDragging) return;
 
-      const handleMouseUp = () => {
-        handleEnd();
-      };
+    const handleMouseMove = (e: MouseEvent) => {
+      setPosition({ x: e.clientX - dragStartRef.current.x, y: e.clientY - dragStartRef.current.y });
+    };
 
-      // Use global listeners for smoother dragging (non-passive for preventDefault)
-      document.addEventListener('mousemove', handleMouseMove, { passive: false });
-      document.addEventListener('mouseup', handleMouseUp);
+    const handleMouseUp = () => setIsDragging(false);
 
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMove, handleEnd]);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, position]);
 
-  // Touch events with native listeners (non-passive to allow preventDefault)
+  // Touch handlers
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -237,187 +48,100 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
       if (e.touches.length === 1) {
         e.preventDefault();
         setIsDragging(true);
-        dragStartRef.current = {
-          x: e.touches[0].clientX - positionRef.current.x,
-          y: e.touches[0].clientY - positionRef.current.y,
-        };
+        dragStartRef.current = { x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y };
         pinchStartRef.current = null;
       } else if (e.touches.length === 2) {
         e.preventDefault();
         setIsDragging(false);
-        // Set up pinch zoom state
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
-        const distance = Math.hypot(
-          touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
-        );
-        const centerX = (touch1.clientX + touch2.clientX) / 2;
-        const centerY = (touch1.clientY + touch2.clientY) / 2;
-        pinchStartRef.current = {
-          distance,
-          scale: scaleRef.current,
-          center: { x: centerX, y: centerY },
-        };
+        const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+        pinchStartRef.current = { distance, scale };
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 1 && isDraggingRef.current && !pinchStartRef.current) {
+      if (e.touches.length === 1 && isDragging && !pinchStartRef.current) {
         e.preventDefault();
-        const newPosition = {
-          x: e.touches[0].clientX - dragStartRef.current.x,
-          y: e.touches[0].clientY - dragStartRef.current.y,
-        };
-        const clampedPosition = clampPosition(newPosition, scaleRef.current);
-        setPosition(clampedPosition);
-        
-        // Check if position is off screen and schedule reset
-        if (isPositionOffScreen(clampedPosition, scaleRef.current)) {
-          if (resetTimeoutRef.current) {
-            clearTimeout(resetTimeoutRef.current);
-          }
-          resetTimeoutRef.current = setTimeout(() => {
-            resetMap();
-          }, 500);
-        } else {
-          if (resetTimeoutRef.current) {
-            clearTimeout(resetTimeoutRef.current);
-            resetTimeoutRef.current = null;
-          }
-        }
+        setPosition({ x: e.touches[0].clientX - dragStartRef.current.x, y: e.touches[0].clientY - dragStartRef.current.y });
       } else if (e.touches.length === 2 && pinchStartRef.current) {
         e.preventDefault();
-        // Process pinch zoom at 10% sensitivity
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
-        const currentDistance = Math.hypot(
-          touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
-        );
-        
-        // Calculate scale change (10% sensitivity)
+        const currentDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
         const distanceRatio = currentDistance / pinchStartRef.current.distance;
-        const scaleChange = (distanceRatio - 1) * 0.1 + 1; // Only apply 10% of the change
+        const scaleChange = (distanceRatio - 1) * 0.1 + 1;
         const newScale = Math.max(0.2, Math.min(2, pinchStartRef.current.scale * scaleChange));
-        
-        // Calculate center point in container coordinates
-        const centerX = (touch1.clientX + touch2.clientX) / 2;
-        const centerY = (touch1.clientY + touch2.clientY) / 2;
-        
-        // Zoom towards the pinch center
-        const scaleChangeRatio = newScale / scaleRef.current;
-        const newX = centerX - (centerX - positionRef.current.x) * scaleChangeRatio;
-        const newY = centerY - (centerY - positionRef.current.y) * scaleChangeRatio;
-        
-        const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
+
+        // Get pinch center
+        const rect = container.getBoundingClientRect();
+        const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+        const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+
+        // Zoom towards pinch center
+        const scaleRatio = newScale / scale;
+        const newX = centerX - (centerX - position.x) * scaleRatio;
+        const newY = centerY - (centerY - position.y) * scaleRatio;
+
         setScale(newScale);
-        setPosition(clampedPosition);
+        setPosition({ x: newX, y: newY });
       }
     };
 
     const handleTouchEnd = () => {
       setIsDragging(false);
       pinchStartRef.current = null;
-      
-      // Final check after touch ends - if map is off screen, reset it
-      if (isPositionOffScreen(positionRef.current, scaleRef.current)) {
-        if (resetTimeoutRef.current) {
-          clearTimeout(resetTimeoutRef.current);
-        }
-        resetTimeoutRef.current = setTimeout(() => {
-          resetMap();
-        }, 300);
-      }
     };
 
-    // Use native listeners with passive: false to allow preventDefault
     container.addEventListener('touchstart', handleTouchStart, { passive: false });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd);
-
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
-      if (resetTimeoutRef.current) {
-        clearTimeout(resetTimeoutRef.current);
-      }
     };
-  }, [clampPosition, isPositionOffScreen, resetMap]);
+  }, [position, scale, isDragging]);
 
-  const onMouseDown = (e: React.MouseEvent) => {
+  // Wheel zoom
+  const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
-    handleStart(e.clientX, e.clientY);
-  };
+    if (!containerRef.current) return;
 
-  const onMouseLeave = () => {
-    if (isDragging) {
-      handleEnd();
-    }
-  };
+    const rect = containerRef.current.getBoundingClientRect();
+    const cursorX = e.clientX - rect.left;
+    const cursorY = e.clientY - rect.top;
 
-  // Wheel zoom - zoom towards center of viewport
-  const onWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault();
-    if (!containerRef.current || !imageRef.current) return;
-    
-    const container = containerRef.current;
-    // Use center of viewport instead of mouse position
-    const centerX = container.clientWidth / 2;
-    const centerY = container.clientHeight / 2;
-    
     const delta = e.deltaY * -0.001;
-    // Limit zoom out to 5x (minimum scale = 0.2) and zoom in to 2x (maximum scale = 2)
     const newScale = Math.max(0.2, Math.min(2, scale + delta));
-    const scaleChange = newScale / scale;
+    if (newScale === scale) return; // No change, don't update
     
-    // Zoom towards center of viewport
-    const newX = centerX - (centerX - position.x) * scaleChange;
-    const newY = centerY - (centerY - position.y) * scaleChange;
-    
-    const clampedPosition = clampPosition({ x: newX, y: newY }, newScale);
-    setScale(newScale);
-    setPosition(clampedPosition);
-  }, [scale, position, clampPosition]);
+    const scaleRatio = newScale / scale;
 
-  // Reset imageLoaded and position/scale when URL changes (Sun/Moon toggle)
+    // Zoom towards cursor
+    const newX = cursorX - (cursorX - position.x) * scaleRatio;
+    const newY = cursorY - (cursorY - position.y) * scaleRatio;
+
+    setScale(newScale);
+    setPosition({ x: newX, y: newY });
+  };
+
+  // Reset when image URL changes (needed for day/night mode switching)
   useEffect(() => {
-    // Reset state when image URL changes
-    // Using a callback to batch state updates and avoid cascading renders
-    const resetState = () => {
-      setImageLoaded(false);
-      setScale(0.2);
-    };
-    // Use requestAnimationFrame to defer state updates
-    requestAnimationFrame(resetState);
+    setScale(0.2);
+    setPosition({ x: 0, y: 0 });
   }, [mapImageUrl]);
 
-  // Align top-left corner when image loads or when scale changes
-  useEffect(() => {
-    if (imageLoaded && containerRef.current && imageRef.current) {
-      // Small delay to ensure container dimensions are calculated
-      setTimeout(() => {
-        alignTopLeft();
-      }, 0);
-    }
-  }, [imageLoaded, scale, alignTopLeft]);
-
-  // Handle image load
-  const handleImageLoad = useCallback(() => {
-    setImageLoaded(true);
-    if (onImageLoad) {
-      onImageLoad();
-    }
-  }, [onImageLoad]);
+  const handleImageLoad = () => {
+    if (onImageLoad) onImageLoad();
+  };
 
   return (
     <div
       ref={containerRef}
       className="map-viewer"
-      onMouseDown={onMouseDown}
-      onMouseLeave={onMouseLeave}
-      onWheel={onWheel}
+      onMouseDown={handleMouseDown}
+      onWheel={handleWheel}
       style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
       <div
@@ -428,15 +152,12 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
         }}
       >
         <img
-          ref={imageRef}
           src={mapImageUrl}
           alt="Map"
           className="map-image"
           draggable={false}
           onLoad={handleImageLoad}
-          onError={() => {
-            console.error('Failed to load map image:', mapImageUrl);
-          }}
+          onError={() => console.error('Failed to load map image:', mapImageUrl)}
           key={mapImageUrl}
         />
       </div>
@@ -444,6 +165,3 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     </div>
   );
 }
-
-
-
