@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import './MapViewer.css';
 
+// Zoom limits - same for both wheel and pinch zoom
+// Adjusted for 150dpi images (doubled from 300dpi baseline)
+const MIN_SCALE = 0.4;
+const MAX_SCALE = 4;
+const INITIAL_SCALE = 0.4;
+
 interface MapViewerProps {
   mapImageUrl: string;
   children?: React.ReactNode;
@@ -9,7 +15,7 @@ interface MapViewerProps {
 
 export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapViewerProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(0.2);
+  const [scale, setScale] = useState(INITIAL_SCALE);
   const [isDragging, setIsDragging] = useState(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
@@ -71,7 +77,7 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
         const currentDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
         const distanceRatio = currentDistance / pinchStartRef.current.distance;
         const scaleChange = (distanceRatio - 1) * 0.5 + 1;
-        const newScale = Math.max(0.2, Math.min(2, pinchStartRef.current.scale * scaleChange));
+        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartRef.current.scale * scaleChange));
 
         // Get pinch center
         const rect = container.getBoundingClientRect();
@@ -113,7 +119,7 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     const cursorY = e.clientY - rect.top;
 
     const delta = e.deltaY * -0.001;
-    const newScale = Math.max(0.2, Math.min(2, scale + delta));
+    const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale + delta));
     if (newScale === scale) return; // No change, don't update
     
     const scaleRatio = newScale / scale;
@@ -126,9 +132,9 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     setPosition({ x: newX, y: newY });
   };
 
-  // Reset when image URL changes (needed for day/night mode switching)
+  // Reset when image URL changes (applies to both map.jpg and back.jpg identically)
   useEffect(() => {
-    setScale(0.2);
+    setScale(INITIAL_SCALE);
     setPosition({ x: 0, y: 0 });
   }, [mapImageUrl]);
 
