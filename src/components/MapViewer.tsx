@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import './MapViewer.css';
 
 // Zoom limits - same for both wheel and pinch zoom
-// Adjusted for 150dpi images (doubled from 300dpi baseline)
-const MIN_SCALE = 0.4;
+// Adjusted for 150dpi images (MAX_SCALE doubled, MIN_SCALE allows zooming out further)
+const MIN_SCALE = 0.2;
 const MAX_SCALE = 4;
 const INITIAL_SCALE = 0.4;
 
