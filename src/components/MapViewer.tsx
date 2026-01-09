@@ -70,7 +70,7 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
         const touch2 = e.touches[1];
         const currentDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
         const distanceRatio = currentDistance / pinchStartRef.current.distance;
-        const scaleChange = (distanceRatio - 1) * 0.1 + 1;
+        const scaleChange = (distanceRatio - 1) * 0.5 + 1;
         const newScale = Math.max(0.2, Math.min(2, pinchStartRef.current.scale * scaleChange));
 
         // Get pinch center
