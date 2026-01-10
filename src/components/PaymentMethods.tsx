@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import type { User } from 'firebase/auth';
 import './PaymentMethods.css';
-import { createCheckoutSession, getCurrentUser, logout } from '../lib/firebase';
+// import { createCheckoutSession, getCurrentUser, logout } from '../lib/firebase';
 
 interface PaymentMethodsProps {
   isOpen: boolean;
@@ -17,86 +17,86 @@ export default function PaymentMethods({
   onClose,
   venmoUrl = 'https://venmo.com',
   checkMailingAddress,
-  user,
-  onRequestAuth,
+  // user,
+  // onRequestAuth,
 }: PaymentMethodsProps) {
-  const [amount, setAmount] = useState('');
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState('');
+  // const [amount, setAmount] = useState('');
+  // const [processing, setProcessing] = useState(false);
+  // const [error, setError] = useState('');
 
   // Reset form when modal opens/closes
-  useEffect(() => {
-    if (isOpen) {
-      setAmount('');
-      setError('');
-    }
-  }, [isOpen]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     setAmount('');
+  //     setError('');
+  //   }
+  // }, [isOpen]);
 
   if (!isOpen) return null;
 
   // Verify user is authenticated
-  const currentUser = user || getCurrentUser();
-  const isAuthenticated = !!currentUser;
+  // const currentUser = user || getCurrentUser();
+  // const isAuthenticated = !!currentUser;
 
-  const handleSignInForCard = () => {
-    if (onRequestAuth) {
-      onRequestAuth();
-    }
-  };
+  // const handleSignInForCard = () => {
+  //   if (onRequestAuth) {
+  //     onRequestAuth();
+  //   }
+  // };
 
-  const handleSignOut = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error('Error signing out:', error);
-      setError('Failed to sign out. Please try again.');
-    }
-  };
+  // const handleSignOut = async () => {
+  //   try {
+  //     await logout();
+  //   } catch (error) {
+  //     console.error('Error signing out:', error);
+  //     setError('Failed to sign out. Please try again.');
+  //   }
+  // };
 
-  const handleCardPayment = async () => {
-    if (!isAuthenticated) {
-      handleSignInForCard();
-      return;
-    }
+  // const handleCardPayment = async () => {
+  //   if (!isAuthenticated) {
+  //     handleSignInForCard();
+  //     return;
+  //   }
 
-    const paymentAmount = parseFloat(amount);
+  //   const paymentAmount = parseFloat(amount);
     
-    if (!paymentAmount || paymentAmount <= 0) {
-      setError('Please enter a valid payment amount');
-      return;
-    }
+  //   if (!paymentAmount || paymentAmount <= 0) {
+  //     setError('Please enter a valid payment amount');
+  //     return;
+  //   }
 
-    if (paymentAmount < 0.50) {
-      setError('Minimum payment amount is $0.50');
-      return;
-    }
+  //   if (paymentAmount < 0.50) {
+  //     setError('Minimum payment amount is $0.50');
+  //     return;
+  //   }
 
-    setProcessing(true);
-    setError('');
+  //   setProcessing(true);
+  //   setError('');
 
-    try {
-      // Create Stripe checkout session using the extension
-      // Force HTTPS to prevent mixed content warnings
-      const origin = window.location.origin.replace(/^http:/, 'https:');
-      const session = await createCheckoutSession(
-        paymentAmount,
-        'USD',
-        `${origin}/payment-success`,
-        `${origin}/payment-cancel`
-      );
+  //   try {
+  //     // Create Stripe checkout session using the extension
+  //     // Force HTTPS to prevent mixed content warnings
+  //     const origin = window.location.origin.replace(/^http:/, 'https:');
+  //     const session = await createCheckoutSession(
+  //       paymentAmount,
+  //       'USD',
+  //       `${origin}/payment-success`,
+  //       `${origin}/payment-cancel`
+  //     );
 
-      // If session has a URL, redirect to Stripe Checkout
-      if (session && typeof session === 'object' && 'url' in session) {
-        window.location.href = (session as { url: string }).url;
-      } else {
-        throw new Error('Invalid response from payment service');
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      setError(error instanceof Error ? error.message : 'An error occurred processing your payment');
-      setProcessing(false);
-    }
-  };
+  //     // If session has a URL, redirect to Stripe Checkout
+  //     if (session && typeof session === 'object' && 'url' in session) {
+  //       window.location.href = (session as { url: string }).url;
+  //     } else {
+  //       throw new Error('Invalid response from payment service');
+  //     }
+  //   } catch (error) {
+  //     console.error('Payment error:', error);
+  //     setError(error instanceof Error ? error.message : 'An error occurred processing your payment');
+  //     setProcessing(false);
+  //   }
+  // };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -165,7 +165,7 @@ export default function PaymentMethods({
           </div>
 
           {/* Credit Card Payment Option - Third */}
-          <div className="payment-option">
+          {/* <div className="payment-option">
             <div className="payment-option-header">
               <h3>Credit Card Payment</h3>
               {isAuthenticated && (
@@ -232,7 +232,7 @@ export default function PaymentMethods({
                 </button>
               </>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
