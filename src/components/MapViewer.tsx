@@ -99,7 +99,6 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
       if (e.touches.length === 1 && isDragging && !pinchStartRef.current) {
         // Single touch drag
         e.preventDefault();
-        const currentPos = positionRef.current;
         setPosition({ 
           x: e.touches[0].clientX - dragStartRef.current.x, 
           y: e.touches[0].clientY - dragStartRef.current.y 
