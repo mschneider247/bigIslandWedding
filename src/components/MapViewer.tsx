@@ -20,7 +20,19 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
   
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
-  const pinchStartRef = useRef<{ distance: number; scale: number } | null>(null);
+  const pinchStartRef = useRef<{ distance: number; scale: number; centerX: number; centerY: number } | null>(null);
+  
+  // Use refs to track current state for touch handlers to avoid stale closures
+  const positionRef = useRef(position);
+  const scaleRef = useRef(scale);
+  
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
+  
+  useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
 
   // Mouse drag
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -45,69 +57,118 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     };
   }, [isDragging, position]);
 
-  // Touch handlers
+  // Touch handlers - using refs to avoid dependency issues
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
+        // Single touch - start dragging
         e.preventDefault();
         setIsDragging(true);
-        dragStartRef.current = { x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y };
+        const currentPos = positionRef.current;
+        dragStartRef.current = { 
+          x: e.touches[0].clientX - currentPos.x, 
+          y: e.touches[0].clientY - currentPos.y 
+        };
         pinchStartRef.current = null;
       } else if (e.touches.length === 2) {
+        // Two touches - start pinch zoom
         e.preventDefault();
         setIsDragging(false);
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
         const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-        pinchStartRef.current = { distance, scale };
+        
+        // Calculate pinch center relative to container
+        const rect = container.getBoundingClientRect();
+        const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
+        const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
+        
+        pinchStartRef.current = { 
+          distance, 
+          scale: scaleRef.current,
+          centerX,
+          centerY
+        };
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 1 && isDragging && !pinchStartRef.current) {
+        // Single touch drag
         e.preventDefault();
-        setPosition({ x: e.touches[0].clientX - dragStartRef.current.x, y: e.touches[0].clientY - dragStartRef.current.y });
+        const currentPos = positionRef.current;
+        setPosition({ 
+          x: e.touches[0].clientX - dragStartRef.current.x, 
+          y: e.touches[0].clientY - dragStartRef.current.y 
+        });
       } else if (e.touches.length === 2 && pinchStartRef.current) {
+        // Two touch pinch zoom
         e.preventDefault();
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
         const currentDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
         const distanceRatio = currentDistance / pinchStartRef.current.distance;
-        const scaleChange = (distanceRatio - 1) * 0.5 + 1;
-        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartRef.current.scale * scaleChange));
-
-        // Get pinch center
+        
+        // Calculate new scale based on distance change
+        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartRef.current.scale * distanceRatio));
+        
+        // Get pinch center (can change during pinch)
         const rect = container.getBoundingClientRect();
         const centerX = (touch1.clientX + touch2.clientX) / 2 - rect.left;
         const centerY = (touch1.clientY + touch2.clientY) / 2 - rect.top;
-
+        
         // Zoom towards pinch center
-        const scaleRatio = newScale / scale;
-        const newX = centerX - (centerX - position.x) * scaleRatio;
-        const newY = centerY - (centerY - position.y) * scaleRatio;
-
+        const currentPos = positionRef.current;
+        const currentScale = scaleRef.current;
+        const scaleRatio = newScale / currentScale;
+        const newX = centerX - (centerX - currentPos.x) * scaleRatio;
+        const newY = centerY - (centerY - currentPos.y) * scaleRatio;
+        
         setScale(newScale);
         setPosition({ x: newX, y: newY });
+        
+        // Update pinch start with new values for smooth continuous zoom
+        pinchStartRef.current = {
+          distance: currentDistance,
+          scale: newScale,
+          centerX,
+          centerY
+        };
       }
     };
 
-    const handleTouchEnd = () => {
-      setIsDragging(false);
-      pinchStartRef.current = null;
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length === 0) {
+        // All touches ended
+        setIsDragging(false);
+        pinchStartRef.current = null;
+      } else if (e.touches.length === 1) {
+        // One touch remains - switch to drag mode
+        setIsDragging(true);
+        const currentPos = positionRef.current;
+        dragStartRef.current = { 
+          x: e.touches[0].clientX - currentPos.x, 
+          y: e.touches[0].clientY - currentPos.y 
+        };
+        pinchStartRef.current = null;
+      }
     };
 
     container.addEventListener('touchstart', handleTouchStart, { passive: false });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
-    container.addEventListener('touchend', handleTouchEnd);
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+    
     return () => {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [position, scale, isDragging]);
+  }, [isDragging]); // Only depend on isDragging, use refs for position/scale
 
   // Wheel zoom
   const handleWheel = (e: React.WheelEvent) => {

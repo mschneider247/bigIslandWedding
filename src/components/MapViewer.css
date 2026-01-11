@@ -20,5 +20,9 @@
   user-select: none;
   -webkit-user-drag: none;
   max-width: none;
+  width: auto;
   height: auto;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
