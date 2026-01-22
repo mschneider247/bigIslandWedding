@@ -14,6 +14,7 @@ interface FloatingLabelProps {
   description: string;
   onSurveyClick: () => void;
   onPaymentClick: () => void;
+  onTravelClick: () => void;
   isNightMode: boolean;
   onToggleMode: (buttonType: 'sun' | 'moon') => void;
   isLoading?: boolean;
@@ -25,6 +26,7 @@ export default function FloatingLabel({
   description,
   onSurveyClick,
   onPaymentClick,
+  onTravelClick,
   isNightMode,
   onToggleMode,
   isLoading = false,
@@ -111,6 +113,14 @@ export default function FloatingLabel({
             onTouchEnd={handleTouchEnd}
           >
             Gift
+          </button>
+          <button 
+            className="label-button travel-button" 
+            onClick={(e) => handleClick(e, onTravelClick)}
+            onTouchStart={(e) => handleTouchStart(e, onTravelClick)}
+            onTouchEnd={handleTouchEnd}
+          >
+            Travel
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import MapViewer from './components/MapViewer';
 import FloatingLabel from './components/FloatingLabel';
 import PaymentMethods from './components/PaymentMethods';
+import TravelOptions from './components/travelOptions';
 import Auth from './components/Auth';
 import { config } from './config';
 import { onAuthChange, type User } from './lib/firebase';
@@ -9,6 +10,7 @@ import './App.css';
 
 function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isTravelModalOpen, setIsTravelModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isNightMode, setIsNightMode] = useState(false);
@@ -34,6 +36,10 @@ function App() {
 
   const handlePaymentClick = () => {
     setIsPaymentModalOpen(true);
+  };
+
+  const handleTravelClick = () => {
+    setIsTravelModalOpen(true);
   };
 
   const handleRequestAuth = () => {
@@ -69,6 +75,7 @@ function App() {
           description={config.mapDescription}
           onSurveyClick={handleSurveyClick}
           onPaymentClick={handlePaymentClick}
+          onTravelClick={handleTravelClick}
           isNightMode={isNightMode}
           onToggleMode={handleToggleMode}
           isLoading={isLoading}
@@ -82,6 +89,10 @@ function App() {
         checkMailingAddress={config.checkMailingAddress}
         user={user}
         onRequestAuth={handleRequestAuth}
+      />
+      <TravelOptions
+        isOpen={isTravelModalOpen}
+        onClose={() => setIsTravelModalOpen(false)}
       />
       <Auth
         isOpen={isAuthModalOpen}
