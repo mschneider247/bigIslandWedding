@@ -27,7 +27,8 @@ export default function Schedule({ isOpen, onClose }: ScheduleProps) {
               <h3>Ceremony</h3>
             </div>
             <p className="payment-option-description">
-              We will carpool from the Schneider/Schilhab residence on September 14th, 2026 to
+              We will carpool from the Schneider/Schilhab
+              residence on September 14th, 2026 to
               Maku'u Point, exact time of day TBD.
             </p>
           </div>
@@ -39,6 +40,9 @@ export default function Schedule({ isOpen, onClose }: ScheduleProps) {
             <p className="payment-option-description">
               Party with us at the Schneider/Schilhab residence in Hawaiian Paradise Park on
               September 14th, 2026, after the ceremony. Exact time of day TBD.
+            </p>
+            <p className="payment-option-description">
+              15-1845 23rd Ave, Keaau, HI 96730
             </p>
           </div>
         </div>
