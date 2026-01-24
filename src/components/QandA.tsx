@@ -120,12 +120,6 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               Connor or Michael. If you don't have our number, reach out via Facebook, Instagram, email,
               etc.
             </p>
-            <p className="payment-option-description">
-              <a href="mailto:fubardesign@gmail.com">fubardesign@gmail.com</a>
-            </p>
-            <p className="payment-option-description">
-              <a href="mailto:mschneider247@gmail.com">mschneider247@gmail.com</a>
-            </p>
           </div>
         </div>
       </div>
