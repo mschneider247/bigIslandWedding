@@ -3,6 +3,9 @@ import MapViewer from './components/MapViewer';
 import FloatingLabel from './components/FloatingLabel';
 import PaymentMethods from './components/PaymentMethods';
 import TravelOptions from './components/travelOptions';
+import Schedule from './components/Schedule';
+import ThingsToDo from './components/ThingsToDo';
+import QandA from './components/QandA';
 import Auth from './components/Auth';
 import { config } from './config';
 import { onAuthChange, type User } from './lib/firebase';
@@ -11,6 +14,9 @@ import './App.css';
 function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isTravelModalOpen, setIsTravelModalOpen] = useState(false);
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [isThingsToDoModalOpen, setIsThingsToDoModalOpen] = useState(false);
+  const [isQaModalOpen, setIsQaModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isNightMode, setIsNightMode] = useState(false);
@@ -40,6 +46,18 @@ function App() {
 
   const handleTravelClick = () => {
     setIsTravelModalOpen(true);
+  };
+
+  const handleScheduleClick = () => {
+    setIsScheduleModalOpen(true);
+  };
+
+  const handleThingsToDoClick = () => {
+    setIsThingsToDoModalOpen(true);
+  };
+
+  const handleQaClick = () => {
+    setIsQaModalOpen(true);
   };
 
   const handleRequestAuth = () => {
@@ -76,6 +94,9 @@ function App() {
           onSurveyClick={handleSurveyClick}
           onPaymentClick={handlePaymentClick}
           onTravelClick={handleTravelClick}
+          onScheduleClick={handleScheduleClick}
+          onThingsToDoClick={handleThingsToDoClick}
+          onQaClick={handleQaClick}
           isNightMode={isNightMode}
           onToggleMode={handleToggleMode}
           isLoading={isLoading}
@@ -93,6 +114,18 @@ function App() {
       <TravelOptions
         isOpen={isTravelModalOpen}
         onClose={() => setIsTravelModalOpen(false)}
+      />
+      <Schedule
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+      />
+      <ThingsToDo
+        isOpen={isThingsToDoModalOpen}
+        onClose={() => setIsThingsToDoModalOpen(false)}
+      />
+      <QandA
+        isOpen={isQaModalOpen}
+        onClose={() => setIsQaModalOpen(false)}
       />
       <Auth
         isOpen={isAuthModalOpen}

@@ -25,6 +25,11 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
+.payment-modal.info-modal {
+  max-width: 1100px;
+  padding: 24px;
+}
+
 .payment-modal-close {
   position: absolute;
   top: 16px;
@@ -116,6 +121,14 @@
   background: rgba(42, 42, 42, 0.5);
 }
 
+.payment-modal.info-modal .payment-options {
+  gap: 16px;
+}
+
+.payment-modal.info-modal .payment-option {
+  padding: 16px;
+}
+
 .payment-option:hover {
   border-color: #646cff;
   box-shadow: 0 2px 8px rgba(100, 108, 255, 0.1);
@@ -136,6 +149,10 @@
   text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
+.payment-modal.info-modal .payment-option-header h3 {
+  font-size: max(1.25rem, 1.4em);
+}
+
 .payment-badge {
   background: #646cff;
   color: white;
@@ -154,6 +171,11 @@
   font-size: max(1.1rem, 1.5em);
   line-height: 1.5;
   text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
+}
+
+.payment-modal.info-modal .payment-option-description {
+  font-size: max(1rem, 1.35em);
+  line-height: 1.6;
 }
 
 .payment-option-button {

@@ -8,7 +8,7 @@ const ensureHttps = (url: string): string => {
 };
 
 // Cache-busting version - increment this when you update images
-const IMAGE_VERSION = '9';
+const IMAGE_VERSION = '10';
 
 // Helper function to add cache-busting to image URLs
 export const withCacheBust = (url: string): string => {

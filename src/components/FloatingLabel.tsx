@@ -15,6 +15,9 @@ interface FloatingLabelProps {
   onSurveyClick: () => void;
   onPaymentClick: () => void;
   onTravelClick: () => void;
+  onScheduleClick: () => void;
+  onThingsToDoClick: () => void;
+  onQaClick: () => void;
   isNightMode: boolean;
   onToggleMode: (buttonType: 'sun' | 'moon') => void;
   isLoading?: boolean;
@@ -27,6 +30,9 @@ export default function FloatingLabel({
   onSurveyClick,
   onPaymentClick,
   onTravelClick,
+  onScheduleClick,
+  onThingsToDoClick,
+  onQaClick,
   isNightMode,
   onToggleMode,
   isLoading = false,
@@ -114,14 +120,60 @@ export default function FloatingLabel({
           >
             Gift
           </button>
-          <button 
-            className="label-button travel-button" 
-            onClick={(e) => handleClick(e, onTravelClick)}
-            onTouchStart={(e) => handleTouchStart(e, onTravelClick)}
-            onTouchEnd={handleTouchEnd}
-          >
-            Travel
-          </button>
+          <div className="label-button-row">
+            <button 
+              className="label-button icon-button travel-button" 
+              onClick={(e) => handleClick(e, onTravelClick)}
+              onTouchStart={(e) => handleTouchStart(e, onTravelClick)}
+              onTouchEnd={handleTouchEnd}
+              aria-label="Travel info"
+              title="Travel"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9L2 14v2l8-2.5V19l-2 1.5V22l3-1 3 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor" />
+              </svg>
+            </button>
+            <button 
+              className="label-button icon-button schedule-button" 
+              onClick={(e) => handleClick(e, onScheduleClick)}
+              onTouchStart={(e) => handleTouchStart(e, onScheduleClick)}
+              onTouchEnd={handleTouchEnd}
+              aria-label="Schedule"
+              title="Schedule"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="3" cy="6" r="1.5" fill="currentColor"/>
+                <circle cx="3" cy="12" r="1.5" fill="currentColor"/>
+                <circle cx="3" cy="18" r="1.5" fill="currentColor"/>
+              </svg>
+            </button>
+            <button 
+              className="label-button icon-button todo-button" 
+              onClick={(e) => handleClick(e, onThingsToDoClick)}
+              onTouchStart={(e) => handleTouchStart(e, onThingsToDoClick)}
+              onTouchEnd={handleTouchEnd}
+              aria-label="Things to do"
+              title="Things to do"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button 
+              className="label-button icon-button qa-button" 
+              onClick={(e) => handleClick(e, onQaClick)}
+              onTouchStart={(e) => handleTouchStart(e, onQaClick)}
+              onTouchEnd={handleTouchEnd}
+              aria-label="Questions and answers"
+              title="Q&A"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M4 5h16a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                <text x="7" y="14.5" fontSize="7" fontFamily="Arial, sans-serif" fill="currentColor">Q&A</text>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

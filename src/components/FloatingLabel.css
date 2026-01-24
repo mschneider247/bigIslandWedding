@@ -212,6 +212,12 @@
   width: 100%;
 }
 
+.label-button-row {
+  margin: 1%;
+  display: flex;
+  gap: 2%;
+}
+
 .label-button {
   padding: 16px 24px;
   margin: 1%;
@@ -229,6 +235,22 @@
   -webkit-user-select: none;
   color: #ffffff;
   text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
+}
+
+.label-button.icon-button {
+  flex: 1;
+  padding: 10px;
+  margin: 0;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label-button.icon-button svg {
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
 }
 
 .survey-button {
@@ -280,6 +302,57 @@
   background-color: #0a213b;
   transform: translateY(0);
   box-shadow: 0 1px 4px rgba(13, 43, 79, 0.3);
+}
+
+.schedule-button {
+  background-color: #4a1f4f;
+  color: white;
+}
+
+.schedule-button:hover {
+  background-color: #5c2a62;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(74, 31, 79, 0.4);
+}
+
+.schedule-button:active {
+  background-color: #3b183f;
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(74, 31, 79, 0.3);
+}
+
+.todo-button {
+  background-color: #0f4a36;
+  color: white;
+}
+
+.todo-button:hover {
+  background-color: #126048;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(15, 74, 54, 0.4);
+}
+
+.todo-button:active {
+  background-color: #0b3a2a;
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(15, 74, 54, 0.3);
+}
+
+.qa-button {
+  background-color: #4f2b0d;
+  color: white;
+}
+
+.qa-button:hover {
+  background-color: #663712;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(79, 43, 13, 0.4);
+}
+
+.qa-button:active {
+  background-color: #3e210a;
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(79, 43, 13, 0.3);
 }
 
 
