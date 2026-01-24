@@ -98,7 +98,7 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               everyone to bring your best ren faire inspired outfit. It is Hawaii, so think breathable,
               light, seaside vibes. Teal and wine-red are the official colors for the bride and groom.
               You can wear any colors you fancy, except, please no white. Think "A Knight's Tale"
-              movie for hybrid modern/renfaire inspiration.
+              movie or "Star Trek" casual for hybrid modern/renfaire inspiration.
             </p>
           </div>
 
