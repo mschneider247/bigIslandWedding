@@ -42,8 +42,16 @@ export default function Schedule({ isOpen, onClose }: ScheduleProps) {
               September 14th, 2026, after the ceremony. Exact time of day TBD.
             </p>
             <p className="payment-option-description">
-              15-1845 23rd Ave, Keaau, HI 96730
+              See our Hawaii Google Earth map for exact locations
             </p>
+            <a
+              href="https://earth.google.com/earth/d/129Ax4U6UHsjyfVA1fXURoh5uqko0Z7NZ?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="payment-option-button secondary"
+            >
+              Open Google Earth map
+            </a>
           </div>
         </div>
       </div>

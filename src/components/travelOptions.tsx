@@ -37,7 +37,7 @@ export default function TravelOptions({ isOpen, onClose }: TravelOptionsProps) {
               <h3>Kona International Airport</h3>
             </div>
             <p className="payment-option-description">
-              Cheaper to fly than the majority of the year, especially into Kona.
+              Cheaper to fly into, majority of the year.
             </p>
             <p className="payment-option-description">
               Southwest is our go-to airline, but plenty of other airline options exist. United is not bad
