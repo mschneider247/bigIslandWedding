@@ -38,8 +38,8 @@ export default function Schedule({ isOpen, onClose }: ScheduleProps) {
               <h3>Reception</h3>
             </div>
             <p className="payment-option-description">
-              Party with us at the Schneider/Schilhab residence in Hawaiian Paradise Park on
-              September 14th, 2026, after the ceremony. Exact time of day TBD.
+              Party with us after the ceremony at the Schneider/Schilhab residence in Hawaiian Paradise Park on
+              September 14th, 2026. Michael and Connor will be staying at the Westin Hapuna Beach Resort, Sept 14th-16th. Final times TBD.
             </p>
             <p className="payment-option-description">
               See our Hawaii Google Earth map for exact locations
