@@ -29,7 +29,7 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
             <p className="payment-option-description">
               March 15th is our deadline to start making party arrangements, so we need a head count
               to move forward. If you need help with planning your trip, reach out to Connor or Michael.
-              We know it is a big adventure to commit to, but we encourage you to consider this the
+              We know it's a big adventure to commit to, but we encourage you to consider this the
               perfect excuse to plan a trip to Hawaii.
             </p>
           </div>
@@ -40,7 +40,6 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
             </div>
             <p className="payment-option-description">
               Yes, just let us know how many so we can arrange catering for the right amount of people.
-              If your party number fluctuates before the big day, no worries, just let us know.
             </p>
           </div>
 
@@ -72,10 +71,10 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>Is the wedding indoors or outdoors?</h3>
             </div>
             <p className="payment-option-description">
-              The ceremony will take place outdoors, on the slightly rocky, black lava cove called
+              The ceremony will take place on a rugged coastal spot, with lava rock cliffs, intense ocean waves and spectacular sunrises.
               Maku'u Point. Seating will be provided if requested. It is a public space, which we will
               use for a short period of time, then the reception will be back at the
-              Schneider/Schilhab residence. There are two houses and an outdoor space.
+              Schneider/Schilhab residence. There are two houses with an adjoining lawn.
             </p>
           </div>
 
@@ -94,11 +93,11 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>What kind of attire should/shouldn't I wear?</h3>
             </div>
             <p className="payment-option-description">
-              We go to the renaissance in Larkspur, CO every year, so of course we are encouraging
-              everyone to bring your best ren faire inspired outfit. It is Hawaii, so think breathable,
-              light, seaside vibes. Teal and wine-red are the official colors for the bride and groom.
-              You can wear any colors you fancy, except, please no white. Think "A Knight's Tale"
-              movie or "Star Trek" casual for hybrid modern/renfaire inspiration.
+              We are encouraging
+              everyone to bring your best ren faire inspired outfit to Hawaii. Think breathable fabrics and light, relaxed layers,
+               seaside vibes. Teal and wine-red are the official colors for the bride and groom.
+              You can wear any colors you fancy, except, please no white. For inspiration, picture the look of "A Knight's Tale"
+              movie or "Star Trek: The Next Generation" casual, a modern take on medieval charm. Reach out if you have any questions!
             </p>
           </div>
 
@@ -117,7 +116,7 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>Whom should I contact with questions?</h3>
             </div>
             <p className="payment-option-description">
-              Connor or Michael. If you don't have our number, reach out via Facebook, Instagram, email,
+              Connor or Michael. If you don't have our numbers, reach out via Facebook, Instagram, email,
               etc.
             </p>
           </div>

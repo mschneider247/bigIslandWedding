@@ -31,28 +31,21 @@ export default function ThingsToDo({ isOpen, onClose }: ThingsToDoProps) {
             </p>
             <p className="payment-option-description">
               <strong>Hilo:</strong> Wet and tropical, cliffside waves, turtle cove swimming and snorkeling,
-              volcano national park, black sand beaches, Malama Market, Safeway, Vrbo and Airbnb,
-              Hawaiian Vanilla Company, Akaka Falls, botanic gardens, Hilo International Airport,
+              Volcano National Park, black sand beaches, Malama Market,
+              Hawaiian Vanilla Company, Akaka Falls, Hawaii Tropical Botanical Garden, Hilo International Airport,
               and the ceremony/reception.
             </p>
             <p className="payment-option-description">
               <strong>Kona:</strong> Dry and sandy, warm swimming-friendly beaches, rocky snorkeling beaches,
-              resorts galore, Vrbo and Airbnb, Kona Brewing, Captain Cook and Shark Temple Heiau,
-              Costco, Safeway, coffee farms and shops, Kona International Airport. We will be
-              spending a few days close to the beaches too.
+              resorts galore, Kona Brewing, Captain Cook and Shark Temple Heiau,
+              Costco, coffee farms and shops, Kona International Airport, and the honeymoon retreat.
             </p>
           </div>
 
           <div className="payment-option">
             <div className="payment-option-header">
-              <h3>Guides, maps, and books</h3>
+              <h3>Hawaii Map</h3>
             </div>
-            <p className="payment-option-description">
-              Guides, maps, and books for travel research about Hawaii.
-            </p>
-            <p className="payment-option-description">
-              Google Earth link to "Hawaii" project map.
-            </p>
             <a
               href="https://earth.google.com/earth/d/129Ax4U6UHsjyfVA1fXURoh5uqko0Z7NZ?usp=sharing"
               target="_blank"
@@ -72,7 +65,7 @@ export default function ThingsToDo({ isOpen, onClose }: ThingsToDoProps) {
 
           <div className="payment-option">
             <div className="payment-option-header">
-              <h3>Book recommendations</h3>
+              <h3>Guide books</h3>
             </div>
             <p className="payment-option-description">
               <a
@@ -85,7 +78,7 @@ export default function ThingsToDo({ isOpen, onClose }: ThingsToDoProps) {
               </a>
             </p>
             <p className="payment-option-description">
-              Book recommendation for guidebook to beaches, history, volcanos, and tropical sights to be
+              Guide to beaches, history, volcanos, and tropical sights to be
               had on the big island. Comes with many nice maps and pictures of the locations.
             </p>
             <p className="payment-option-description">
@@ -99,10 +92,10 @@ export default function ThingsToDo({ isOpen, onClose }: ThingsToDoProps) {
               </a>
             </p>
             <p className="payment-option-description">
-              Book recommendation for perspective on the beguiling, tragic, yet beautiful history behind
+              Perspective on the beguiling, tragic, yet beautiful history behind
               the 50th state. Hawaiians and Pacific Islanders in general have a complex relationship with
-              the continental USA. If you don't know how to feel about being a tourist in Hawaii
-              respectfully, you'll get a glimpse of Hawaiian dynasties, religious colonialism, and plate
+              the continental USA. If you don't know how to feel about being a tourist in Hawaii,
+              you'll get a glimpse of Hawaiian dynasties, religious colonialism, and plate
               lunches in this book.
             </p>
           </div>

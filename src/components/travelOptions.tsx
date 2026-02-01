@@ -37,16 +37,16 @@ export default function TravelOptions({ isOpen, onClose }: TravelOptionsProps) {
               <h3>Kona International Airport</h3>
             </div>
             <p className="payment-option-description">
-              Cheaper to fly into, majority of the year.
+              Cheaper to fly into majority of the year.
             </p>
             <p className="payment-option-description">
               Southwest is our go-to airline, but plenty of other airline options exist. United is not bad
               either, pricing is competitive.
             </p>
             <p className="payment-option-description">
-              An hour and a half drive across Saddle Road to get from Kona International Airport to the
+              It's an hour and a half drive across Saddle Road to get from Kona International Airport to the
               Puna/Hilo area. If you want to be closer to the beaches for most of your stay, fly and lodge
-              closer to Kona. You will be an hour and a half away from the reception and ceremony location.
+              closer to Kona, but you will be a couple hours away from the reception and ceremony location.
             </p>
           </div>
 
@@ -70,7 +70,7 @@ export default function TravelOptions({ isOpen, onClose }: TravelOptionsProps) {
             </div>
             <p className="payment-option-description">
               Whether you choose to stay on the Hilo or Kona side of the island, renting a car is the best
-              way to get around. We will try to carpool and accommodate it among the guests for the
+              way to get around. We will try to carpool and accommodate among the guests for the
               ceremony and reception. Uber is available on the island too. Airbnb and Vrbo are the best
               options for a budget deal on lodgings. Resorts and hotels are also an option, but will be more
               expensive.
