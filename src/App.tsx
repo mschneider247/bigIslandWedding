@@ -6,6 +6,7 @@ import TravelOptions from './components/travelOptions';
 import Schedule from './components/Schedule';
 import ThingsToDo from './components/ThingsToDo';
 import QandA from './components/QandA';
+import ContactInfo from './components/ContactInfo';
 import Auth from './components/Auth';
 import { config } from './config';
 import { onAuthChange, type User } from './lib/firebase';
@@ -17,6 +18,7 @@ function App() {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [isThingsToDoModalOpen, setIsThingsToDoModalOpen] = useState(false);
   const [isQaModalOpen, setIsQaModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isNightMode, setIsNightMode] = useState(false);
@@ -60,6 +62,10 @@ function App() {
     setIsQaModalOpen(true);
   };
 
+  const handleContactClick = () => {
+    setIsContactModalOpen(true);
+  };
+
   const handleRequestAuth = () => {
     setIsAuthModalOpen(true);
   };
@@ -97,10 +103,12 @@ function App() {
           onScheduleClick={handleScheduleClick}
           onThingsToDoClick={handleThingsToDoClick}
           onQaClick={handleQaClick}
+          onContactClick={handleContactClick}
           isNightMode={isNightMode}
           onToggleMode={handleToggleMode}
           isLoading={isLoading}
           loadingButton={loadingButton}
+          isContactModalOpen={isContactModalOpen}
         />
       </MapViewer>
       <PaymentMethods
@@ -126,6 +134,10 @@ function App() {
       <QandA
         isOpen={isQaModalOpen}
         onClose={() => setIsQaModalOpen(false)}
+      />
+      <ContactInfo
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
       <Auth
         isOpen={isAuthModalOpen}

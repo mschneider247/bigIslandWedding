@@ -18,10 +18,12 @@ interface FloatingLabelProps {
   onScheduleClick: () => void;
   onThingsToDoClick: () => void;
   onQaClick: () => void;
+  onContactClick: () => void;
   isNightMode: boolean;
   onToggleMode: (buttonType: 'sun' | 'moon') => void;
   isLoading?: boolean;
   loadingButton?: 'sun' | 'moon' | null;
+  isContactModalOpen?: boolean;
 }
 
 export default function FloatingLabel({
@@ -33,10 +35,12 @@ export default function FloatingLabel({
   onScheduleClick,
   onThingsToDoClick,
   onQaClick,
+  onContactClick,
   isNightMode,
   onToggleMode,
   isLoading = false,
   loadingButton = null,
+  isContactModalOpen = false,
 }: FloatingLabelProps) {
   // Track if a touch event occurred to prevent double-firing with click
   const touchHandledRef = useRef(false);
@@ -97,6 +101,18 @@ export default function FloatingLabel({
             {loadingButton === 'moon' && <div className="clock-loader"></div>}
             <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" fill="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <button
+            className={`toggle-button contact-button ${isContactModalOpen ? 'active' : ''}`}
+            onClick={(e) => handleClick(e, onContactClick)}
+            onTouchStart={(e) => handleTouchStart(e, onContactClick)}
+            onTouchEnd={handleTouchEnd}
+            aria-label="Contact information"
+          >
+            <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+              <text x="12" y="17" textAnchor="middle" fontSize="14" fontWeight="bold" fill="currentColor">i</text>
             </svg>
           </button>
         </div>

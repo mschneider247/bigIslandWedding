@@ -93,11 +93,11 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>What kind of attire should/shouldn't I wear?</h3>
             </div>
             <p className="payment-option-description">
-              We are encouraging
-              everyone to bring your best ren faire inspired outfit to Hawaii. Think breathable fabrics and light, relaxed layers,
-               seaside vibes. Teal and wine-red are the official colors for the bride and groom.
-              You can wear any colors you fancy, except, please no white. For inspiration, picture the look of "A Knight's Tale"
-              movie or "Star Trek: The Next Generation" casual, a modern take on medieval charm. Reach out if you have any questions!
+              We're encouraging everyone to embrace ren faire–inspired attire for our Hawaii celebration. Think breathable fabrics, 
+              light layers, and seaside vibes — pirates, fairies, elves, peasants, knights, or anything in between. Teal and wine-red 
+              are the official colors of the bride and groom, but wear whatever colors you fancy — just please, no white. For inspiration, 
+              think Lord of the Rings or even Star Trek: The Next Generation casual: a modern take on medieval charm. 
+              Reach out if you have any questions!
             </p>
           </div>
 
@@ -108,16 +108,6 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
             <p className="payment-option-description">
               Yes, please do! We won't have an official photographer, we would love for you to help us
               capture the moment on your more than capable smartphones.
-            </p>
-          </div>
-
-          <div className="payment-option">
-            <div className="payment-option-header">
-              <h3>Whom should I contact with questions?</h3>
-            </div>
-            <p className="payment-option-description">
-              Connor or Michael. If you don't have our numbers, reach out via Facebook, Instagram, email,
-              etc.
             </p>
           </div>
         </div>
