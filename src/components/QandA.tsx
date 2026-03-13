@@ -27,7 +27,7 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>When is the RSVP deadline?</h3>
             </div>
             <p className="payment-option-description">
-              March 15th is our deadline to start making party arrangements, so we need a head count
+              April 15th is our deadline to start making party arrangements, so we need a head count
               to move forward. If you need help with planning your trip, reach out to Connor or Michael.
               We know it's a big adventure to commit to, but we encourage you to consider this the
               perfect excuse to plan a trip to Hawaii.
