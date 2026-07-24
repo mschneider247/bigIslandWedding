@@ -1,4 +1,5 @@
 import './PaymentMethods.css';
+import { useEscapeClose } from '../hooks/useEscapeClose';
 
 interface QandAProps {
   isOpen: boolean;
@@ -6,6 +7,8 @@ interface QandAProps {
 }
 
 export default function QandA({ isOpen, onClose }: QandAProps) {
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -27,10 +30,9 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>When is the RSVP deadline?</h3>
             </div>
             <p className="payment-option-description">
-              April 15th is our deadline to start making party arrangements, so we need a head count
-              to move forward. If you need help with planning your trip, reach out to Connor or Michael.
-              We know it's a big adventure to commit to, but we encourage you to consider this the
-              perfect excuse to plan a trip to Hawaii.
+              We're finalizing our headcount now - please reply with your flight dates to confirm
+              you're coming, so we can lock in catering. We'll follow up with menu choices once we
+              have a final count. Reach out to Connor or Michael if you need help planning the trip.
             </p>
           </div>
 
@@ -93,10 +95,11 @@ export default function QandA({ isOpen, onClose }: QandAProps) {
               <h3>What kind of attire should/shouldn't I wear?</h3>
             </div>
             <p className="payment-option-description">
-              We're encouraging everyone to embrace ren faire–inspired attire for our Hawaii celebration. Think breathable fabrics, 
-              light layers, and seaside vibes — pirates, fairies, elves, peasants, knights, or anything in between. Teal and wine-red 
-              are the official colors of the bride and groom, but wear whatever colors you fancy — just please, no white. For inspiration, 
-              think Lord of the Rings or even Star Trek: The Next Generation casual: a modern take on medieval charm. 
+              Bring your most fun, comfortable Renaissance Faire outfit — breathable fabrics for the
+              tropical climate, and leave the furs at home. We're skipping white for silver and
+              gunmetal grey accents: sea goddess teal/silver for the bride, deadly nightshade
+              burgundy/black for the groom. Wear whatever colors you fancy otherwise. Think Lord of
+              the Rings meets Star Trek: The Next Generation casual — a modern take on medieval charm.
               Reach out if you have any questions!
             </p>
           </div>

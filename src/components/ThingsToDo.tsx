@@ -1,4 +1,5 @@
 import './PaymentMethods.css';
+import { useEscapeClose } from '../hooks/useEscapeClose';
 
 interface ThingsToDoProps {
   isOpen: boolean;
@@ -6,6 +7,8 @@ interface ThingsToDoProps {
 }
 
 export default function ThingsToDo({ isOpen, onClose }: ThingsToDoProps) {
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {

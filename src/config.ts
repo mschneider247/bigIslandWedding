@@ -16,19 +16,42 @@ export const withCacheBust = (url: string): string => {
   return `${url}${separator}v=${IMAGE_VERSION}`;
 };
 
+// Pinpoints on map.jpg (as % of image width/height) for the day-of locations.
+export const weddingLocations = [
+  {
+    id: 'ceremony',
+    label: 'Ceremony',
+    time: '10 - 11 AM',
+    x: 77.3,
+    y: 41.7,
+    color: '#ffb627',
+  },
+  {
+    id: 'reception',
+    label: 'Reception',
+    time: '11 AM - 5 PM',
+    x: 74.4,
+    y: 42.0,
+    color: '#ff4d8d',
+  },
+  {
+    id: 'honeymoon',
+    label: 'Honeymoon',
+    time: 'Sept 15 - 16',
+    x: 40.2,
+    y: 26.5,
+    color: '#2dd4bf',
+  },
+];
+
 export const config = {
   // Map settings
   mapImage: withCacheBust('/map.jpg'), // Place your map image in the public folder
-  backImage: withCacheBust('/back.jpg'), // Background image for night mode
-  
+
   // Label content
   mapTitle: "Join us for our wedding!",
   mapDescription: 'Adventure and romance await!',
-  
-  // Survey URL - replace with your actual survey link
-  // Automatically converts HTTP to HTTPS to prevent mixed content warnings
-  surveyUrl: ensureHttps(import.meta.env.VITE_SURVEY_URL || ''),
-  
+
   // Payment settings
   // Automatically converts HTTP to HTTPS to prevent mixed content warnings
   venmoUrl: ensureHttps(import.meta.env.VITE_VENMO_URL || ''), // Replace with your Venmo profile URL

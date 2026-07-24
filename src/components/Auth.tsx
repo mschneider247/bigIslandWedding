@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { signIn, signUp, getCurrentUser } from '../lib/firebase';
+import { useEscapeClose } from '../hooks/useEscapeClose';
 import './Auth.css';
 
 interface AuthProps {
@@ -95,6 +96,8 @@ export default function Auth({ isOpen, onClose, onAuthSuccess }: AuthProps) {
       onClose();
     }
   };
+
+  useEscapeClose(isOpen, onClose);
 
   if (!isOpen) return null;
 

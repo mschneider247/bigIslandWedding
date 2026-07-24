@@ -1,0 +1,65 @@
+.marker-dev-panel {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1500;
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+  max-width: 280px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.marker-dev-panel-title {
+  font-weight: 600;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+.marker-dev-panel-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.marker-dev-panel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.marker-dev-panel-label {
+  flex-shrink: 0;
+}
+
+.marker-dev-panel-coords {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+.marker-dev-panel-copy {
+  margin-top: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  transition: background 0.2s ease;
+}
+
+.marker-dev-panel-copy:hover {
+  background: rgba(255, 255, 255, 0.18);
+}

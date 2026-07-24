@@ -25,6 +25,28 @@
   text-shadow: 2px 2px 4px #1a1a1a, 1px 1px 2px #1a1a1a;
 }
 
+.countdown-tick {
+  display: inline-block;
+  animation: countdown-tick-pulse 0.4s ease-out;
+}
+
+@keyframes countdown-tick-pulse {
+  0% {
+    transform: scale(1.18);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdown-tick {
+    animation: none;
+  }
+}
+
 .countdown-label {
   font-size: max(0.9rem, 1.5em);
   font-weight: 500;

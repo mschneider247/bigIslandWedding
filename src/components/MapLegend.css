@@ -1,0 +1,92 @@
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  padding: 10px 16px;
+  animation: legend-in 0.4s ease-out;
+}
+
+@keyframes legend-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.map-legend-item {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-size: max(1rem, 1.3em);
+  color: #ffffff;
+  text-shadow: 1px 1px 3px #1a1a1a;
+  white-space: nowrap;
+}
+
+.map-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  align-self: center;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+
+.map-legend-label {
+  font-weight: 600;
+}
+
+.map-legend-time {
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.map-legend-link {
+  font-size: max(1rem, 1.3em);
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 1px 1px 3px #1a1a1a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  transition: opacity 0.2s ease;
+}
+
+.map-legend-link:hover {
+  opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+  .map-legend {
+    gap: 6px 12px;
+    padding: 8px 12px;
+  }
+
+  .map-legend-item {
+    font-size: max(0.8rem, 1.05em);
+  }
+
+  .map-legend-link {
+    font-size: max(0.8rem, 1.05em);
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-legend {
+    animation: none;
+  }
+}

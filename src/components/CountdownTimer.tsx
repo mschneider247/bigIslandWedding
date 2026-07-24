@@ -57,7 +57,7 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
       </div>
       <span className="countdown-separator">:</span>
       <div className="countdown-item">
-        <span className="countdown-value">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+        <span key={timeLeft.seconds} className="countdown-value countdown-tick">{timeLeft.seconds.toString().padStart(2, '0')}</span>
         <span className="countdown-label">{timeLeft.seconds === 1 ? 'Second' : 'Seconds'}</span>
       </div>
     </div>

@@ -1,46 +1,45 @@
 import { useRef } from 'react';
 import CountdownTimer from './CountdownTimer';
+import MapLegend from './MapLegend';
 import './FloatingLabel.css';
 
-// Get the wedding date: September 14, 2026 at 12:00 PM HST (Hawaii-Aleutian Standard Time)
-// HST is UTC-10, so 12:00 PM HST = 22:00 UTC (10:00 PM UTC) on the same day
+// Get the wedding date: September 14, 2026 at 10:00 AM HST (Hawaii-Aleutian Standard Time),
+// when the ceremony begins at Maku'u Point. HST is UTC-10, so 10:00 AM HST = 20:00 UTC.
 function getWeddingDate(): Date {
-  // September 14, 2026 at 22:00 UTC = September 14, 2026 at 12:00 PM HST
-  return new Date(Date.UTC(2026, 8, 14, 22, 0, 0)); // Month is 0-indexed, so 8 = September
+  return new Date(Date.UTC(2026, 8, 14, 20, 0, 0)); // Month is 0-indexed, so 8 = September
+}
+
+interface LegendItem {
+  id: string;
+  label: string;
+  time: string;
+  color: string;
 }
 
 interface FloatingLabelProps {
   title: string;
   description: string;
-  onSurveyClick: () => void;
   onPaymentClick: () => void;
   onTravelClick: () => void;
   onScheduleClick: () => void;
   onThingsToDoClick: () => void;
   onQaClick: () => void;
   onContactClick: () => void;
-  isNightMode: boolean;
-  onToggleMode: (buttonType: 'sun' | 'moon') => void;
-  isLoading?: boolean;
-  loadingButton?: 'sun' | 'moon' | null;
   isContactModalOpen?: boolean;
+  legendItems?: LegendItem[];
 }
 
 export default function FloatingLabel({
   title,
   description,
-  onSurveyClick,
   onPaymentClick,
   onTravelClick,
   onScheduleClick,
   onThingsToDoClick,
   onQaClick,
   onContactClick,
-  isNightMode,
-  onToggleMode,
-  isLoading = false,
-  loadingButton = null,
   isContactModalOpen = false,
+  legendItems = [],
 }: FloatingLabelProps) {
   // Track if a touch event occurred to prevent double-firing with click
   const touchHandledRef = useRef(false);
@@ -74,35 +73,7 @@ export default function FloatingLabel({
     <div className="floating-label">
       <div className="label-content">
         <img src="/label.png" alt="Label" className="label-image" />
-        <div className="day-night-toggle">
-          <button
-            className={`toggle-button sun-button ${!isNightMode ? 'active' : ''} ${loadingButton === 'sun' ? 'loading' : ''}`}
-            onClick={(e) => handleClick(e, () => onToggleMode('sun'))}
-            onTouchStart={(e) => handleTouchStart(e, () => onToggleMode('sun'))}
-            onTouchEnd={handleTouchEnd}
-            aria-label="Switch to day mode"
-            disabled={isLoading}
-          >
-            {loadingButton === 'sun' && <div className="clock-loader"></div>}
-            <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" fill={!isNightMode ? "#87CEEB" : "#555"} stroke={!isNightMode ? "#87CEEB" : "#555"} strokeWidth="1"/>
-              <circle cx="12" cy="12" r="5" fill={!isNightMode ? "#FFD700" : "#555"} stroke={!isNightMode ? "#FFD700" : "#555"} strokeWidth="1"/>
-              <path d="M12 1v3M12 20v3M23 12h-3M4 12H1M19.07 4.93l-2.12 2.12M6.05 17.95l-2.12 2.12M19.07 19.07l-2.12-2.12M6.05 6.05l-2.12-2.12" stroke={!isNightMode ? "#FFD700" : "#555"} strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </button>
-          <button
-            className={`toggle-button moon-button ${isNightMode ? 'active' : ''} ${loadingButton === 'moon' ? 'loading' : ''}`}
-            onClick={(e) => handleClick(e, () => onToggleMode('moon'))}
-            onTouchStart={(e) => handleTouchStart(e, () => onToggleMode('moon'))}
-            onTouchEnd={handleTouchEnd}
-            aria-label="Switch to night mode"
-            disabled={isLoading}
-          >
-            {loadingButton === 'moon' && <div className="clock-loader"></div>}
-            <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" fill="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+        <div className="label-icon-row">
           <button
             className={`toggle-button contact-button ${isContactModalOpen ? 'active' : ''}`}
             onClick={(e) => handleClick(e, onContactClick)}
@@ -120,16 +91,8 @@ export default function FloatingLabel({
         <p className="label-description">{description}</p>
         <CountdownTimer targetDate={getWeddingDate()} />
         <div className="label-buttons">
-          <button 
-            className="label-button survey-button" 
-            onClick={(e) => handleClick(e, onSurveyClick)}
-            onTouchStart={(e) => handleTouchStart(e, onSurveyClick)}
-            onTouchEnd={handleTouchEnd}
-          >
-            RSVP
-          </button>
-          <button 
-            className="label-button payment-button" 
+          <button
+            className="label-button payment-button"
             onClick={(e) => handleClick(e, onPaymentClick)}
             onTouchStart={(e) => handleTouchStart(e, onPaymentClick)}
             onTouchEnd={handleTouchEnd}
@@ -191,6 +154,7 @@ export default function FloatingLabel({
             </button>
           </div>
         </div>
+        <MapLegend items={legendItems} />
       </div>
     </div>
   );

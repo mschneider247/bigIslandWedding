@@ -1,4 +1,5 @@
 import './PaymentMethods.css';
+import { useEscapeClose } from '../hooks/useEscapeClose';
 
 interface ContactInfoProps {
   isOpen: boolean;
@@ -9,6 +10,8 @@ export default function ContactInfo({
   isOpen,
   onClose,
 }: ContactInfoProps) {
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {

@@ -11,6 +11,7 @@
   z-index: 2000;
   padding: 20px;
   backdrop-filter: blur(4px);
+  animation: modal-overlay-in 0.25s ease-out;
 }
 
 .payment-modal {
@@ -23,6 +24,34 @@
   overflow-y: auto;
   position: relative;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: modal-pop-in 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-modal-overlay,
+  .payment-modal {
+    animation: none;
+  }
 }
 
 .payment-modal.info-modal {

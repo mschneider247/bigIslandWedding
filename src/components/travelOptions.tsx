@@ -1,4 +1,5 @@
 import './PaymentMethods.css';
+import { useEscapeClose } from '../hooks/useEscapeClose';
 
 interface TravelOptionsProps {
   isOpen: boolean;
@@ -6,6 +7,8 @@ interface TravelOptionsProps {
 }
 
 export default function TravelOptions({ isOpen, onClose }: TravelOptionsProps) {
+  useEscapeClose(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {

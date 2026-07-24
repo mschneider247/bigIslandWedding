@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import MapViewer from './components/MapViewer';
 import FloatingLabel from './components/FloatingLabel';
+import MarkerDevPanel from './components/MarkerDevPanel';
 import PaymentMethods from './components/PaymentMethods';
 import TravelOptions from './components/travelOptions';
 import Schedule from './components/Schedule';
@@ -8,7 +9,7 @@ import ThingsToDo from './components/ThingsToDo';
 import QandA from './components/QandA';
 import ContactInfo from './components/ContactInfo';
 import Auth from './components/Auth';
-import { config } from './config';
+import { config, weddingLocations } from './config';
 import { onAuthChange, type User } from './lib/firebase';
 import './App.css';
 
@@ -21,9 +22,9 @@ function App() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isNightMode, setIsNightMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingButton, setLoadingButton] = useState<'sun' | 'moon' | null>(null);
+  const [markerOverrides, setMarkerOverrides] = useState<Record<string, { x: number; y: number }>>({});
+  // Add ?editPins to the URL to drag-tune pin coordinates and copy the result back into config.ts
+  const [isMarkerEditMode] = useState(() => new URLSearchParams(window.location.search).has('editPins'));
 
   // Listen to auth state changes
   useEffect(() => {
@@ -33,14 +34,17 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const handleSurveyClick = () => {
-    if (config.surveyUrl) {
-      window.open(config.surveyUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      console.warn('Survey URL not configured. Please set VITE_SURVEY_URL in your .env file.');
-      alert('Survey URL is not configured. Please contact the site administrator.');
-    }
-  };
+  // Greet first-time visitors with the wedding day details, once per browser
+  useEffect(() => {
+    if (localStorage.getItem('weddingDetailsSeen')) return;
+
+    const timer = setTimeout(() => {
+      setIsScheduleModalOpen(true);
+      localStorage.setItem('weddingDetailsSeen', 'true');
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePaymentClick = () => {
     setIsPaymentModalOpen(true);
@@ -75,42 +79,34 @@ function App() {
     // The user state will be updated automatically via onAuthChange
   };
 
-  const handleToggleMode = (buttonType: 'sun' | 'moon') => {
-    // Set loading state when toggling
-    setIsLoading(true);
-    setLoadingButton(buttonType);
-    setIsNightMode(buttonType === 'moon');
+  const handleMarkerMove = (id: string, x: number, y: number) => {
+    setMarkerOverrides((prev) => ({ ...prev, [id]: { x, y } }));
   };
 
-  const handleImageLoad = () => {
-    // Clear loading state when image loads
-    setIsLoading(false);
-    setLoadingButton(null);
-  };
-
-  // Determine which image to use based on night mode
-  const currentMapImage = isNightMode ? config.backImage : config.mapImage;
+  const liveMarkers = weddingLocations.map((loc) => ({ ...loc, ...markerOverrides[loc.id] }));
 
   return (
     <div className="app">
-      <MapViewer mapImageUrl={currentMapImage} onImageLoad={handleImageLoad}>
+      <MapViewer
+        mapImageUrl={config.mapImage}
+        markers={liveMarkers}
+        editable={isMarkerEditMode}
+        onMarkerMove={handleMarkerMove}
+      >
         <FloatingLabel
           title={config.mapTitle}
           description={config.mapDescription}
-          onSurveyClick={handleSurveyClick}
           onPaymentClick={handlePaymentClick}
           onTravelClick={handleTravelClick}
           onScheduleClick={handleScheduleClick}
           onThingsToDoClick={handleThingsToDoClick}
           onQaClick={handleQaClick}
           onContactClick={handleContactClick}
-          isNightMode={isNightMode}
-          onToggleMode={handleToggleMode}
-          isLoading={isLoading}
-          loadingButton={loadingButton}
           isContactModalOpen={isContactModalOpen}
+          legendItems={liveMarkers}
         />
       </MapViewer>
+      {isMarkerEditMode && <MarkerDevPanel markers={liveMarkers} />}
       <PaymentMethods
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
@@ -144,7 +140,7 @@ function App() {
         onClose={() => setIsAuthModalOpen(false)}
         onAuthSuccess={handleAuthSuccess}
       />
-      </div>
+    </div>
   );
 }
 

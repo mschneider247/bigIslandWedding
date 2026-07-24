@@ -7,18 +7,33 @@ const MIN_SCALE = 0.2;
 const MAX_SCALE = 4;
 const INITIAL_SCALE = 0.4;
 
+export interface MapMarker {
+  id: string;
+  label: string;
+  time: string;
+  x: number; // percent of image width
+  y: number; // percent of image height
+  color: string;
+}
+
 interface MapViewerProps {
   mapImageUrl: string;
   children?: React.ReactNode;
-  onImageLoad?: () => void;
+  markers?: MapMarker[];
+  editable?: boolean;
+  onMarkerMove?: (id: string, x: number, y: number) => void;
 }
 
-export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapViewerProps) {
+const clampPercent = (n: number) => Math.min(100, Math.max(0, n));
+
+export default function MapViewer({ mapImageUrl, children, markers, editable, onMarkerMove }: MapViewerProps) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(INITIAL_SCALE);
   const [isDragging, setIsDragging] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const draggingMarkerRef = useRef<string | null>(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const pinchStartRef = useRef<{ distance: number; scale: number; centerX: number; centerY: number } | null>(null);
   
@@ -169,6 +184,51 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     };
   }, [isDragging]); // Only depend on isDragging, use refs for position/scale
 
+  // Marker drag (dev tool for fine-tuning pin coordinates - only wired up when editable)
+  useEffect(() => {
+    if (!editable) return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      const id = draggingMarkerRef.current;
+      if (!id || !mapContainerRef.current) return;
+      const rect = mapContainerRef.current.getBoundingClientRect();
+      const x = clampPercent(((e.clientX - rect.left) / rect.width) * 100);
+      const y = clampPercent(((e.clientY - rect.top) / rect.height) * 100);
+      onMarkerMove?.(id, x, y);
+    };
+
+    const handlePointerUp = () => {
+      draggingMarkerRef.current = null;
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [editable, onMarkerMove]);
+
+  const handleMarkerPointerDown = (e: React.PointerEvent, id: string) => {
+    if (!editable) return;
+    e.preventDefault();
+    e.stopPropagation();
+    draggingMarkerRef.current = id;
+  };
+
+  const handleMarkerKeyDown = (e: React.KeyboardEvent, marker: MapMarker) => {
+    if (!editable) return;
+    const step = e.shiftKey ? 1 : 0.1;
+    let { x, y } = marker;
+    if (e.key === 'ArrowLeft') x -= step;
+    else if (e.key === 'ArrowRight') x += step;
+    else if (e.key === 'ArrowUp') y -= step;
+    else if (e.key === 'ArrowDown') y += step;
+    else return;
+    e.preventDefault();
+    onMarkerMove?.(marker.id, clampPercent(x), clampPercent(y));
+  };
+
   // Wheel zoom
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -192,15 +252,11 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
     setPosition({ x: newX, y: newY });
   };
 
-  // Reset when image URL changes (applies to both map.jpg and back.jpg identically)
+  // Reset pan/zoom if the image URL ever changes
   useEffect(() => {
     setScale(INITIAL_SCALE);
     setPosition({ x: 0, y: 0 });
   }, [mapImageUrl]);
-
-  const handleImageLoad = () => {
-    if (onImageLoad) onImageLoad();
-  };
 
   return (
     <div
@@ -211,6 +267,7 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
       style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
       <div
+        ref={mapContainerRef}
         className={`map-container ${isDragging ? 'dragging' : ''}`}
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
@@ -222,10 +279,29 @@ export default function MapViewer({ mapImageUrl, children, onImageLoad }: MapVie
           alt="Map"
           className="map-image"
           draggable={false}
-          onLoad={handleImageLoad}
           onError={() => console.error('Failed to load map image:', mapImageUrl)}
           key={mapImageUrl}
         />
+        {markers?.map((marker) => (
+          <div
+            key={marker.id}
+            className={`map-marker ${editable ? 'map-marker-editable' : ''}`}
+            style={{
+              left: `${marker.x}%`,
+              top: `${marker.y}%`,
+              '--marker-color': marker.color,
+            } as React.CSSProperties}
+            title={`${marker.label} · ${marker.time}`}
+            onPointerDown={(e) => handleMarkerPointerDown(e, marker.id)}
+            onKeyDown={editable ? (e) => handleMarkerKeyDown(e, marker) : undefined}
+            tabIndex={editable ? 0 : undefined}
+            role={editable ? 'button' : undefined}
+            aria-label={editable ? `${marker.label} pin - drag or use arrow keys to reposition` : undefined}
+          >
+            <span className="map-marker-pulse" />
+            <span className="map-marker-dot" />
+          </div>
+        ))}
       </div>
       {children}
     </div>

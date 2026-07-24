@@ -32,3 +32,10 @@ dist-ssr
 .firebase/
 firebase-debug.log
 firestore-debug.log
+
+# Stray tsc output: this project is TS-only, but a stray `tsc` (e.g. a background
+# watch task) can emit compiled .js next to every .ts/.tsx file. Vite resolves
+# extensionless imports to .js before .ts, so leftover files here silently shadow
+# real source in both dev and build. Never commit them, and delete on sight.
+src/**/*.js
+vite.config.js
